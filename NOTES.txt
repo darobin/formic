@@ -1,0 +1,26 @@
+
+STUFF:
+    - enctype=application/json
+        - use structured field names as commonly employed in PHP
+        - foo -> { foo: "val" }
+        - foo, foo (multiple fields with that name, select, etc.) -> { foo: ["val", "val"] }
+        - foo[1] -> { foo: [null, "val"] }
+        - foo[bar] -> { foo: { bar: "val" }}
+        - foo[bar][0] -> { foo: { bar: ["val"] }}
+        - steps are created along the way
+        - this can create conflicts
+            - <input name=foo value=x>
+              <input name=foo[bar] value=y>
+                -> { foo: { "": "x", bar: "y" }}
+            - <input name=foo[bar] value=x>
+              <input name=foo[0] value=y>
+                -> { foo: { 0: "x", bar: "y" }}
+            - <input name=foo value=x>
+              <input name=foo[0] value=y>
+                -> { foo: { "": "x", 0: "y" }}
+                
+    - Improved FormData?
+    - <form src>
+    - repeats and templates
+    - matching common PHP semantics
+    - DnD
