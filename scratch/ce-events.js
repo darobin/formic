@@ -8,35 +8,35 @@
 
 (function () {
     var top = NaN, savedRange;
-    function rangeDown (ev) {
-        var sel = window.getSelection()
-        ,   range = sel.getRangeAt(0)
-        ,   kc = ev.keyCode
-        ,   up = kc === 38
-        ,   dn = kc === 40
-        ,   arrow = up || dn
+    function details (ev) {
+        var kc = ev.keyCode
+        ,   ret = {
+                sel:    window.getSelection()
+            ,   range:  window.getSelection().getRangeAt(0)
+            ,   up:     kc === 38
+            ,   down:   kc === 40
+            ,   left:   kc === 37
+            ,   right:  kc === 39
+            }
         ;
-        if (arrow) {
-            top = range.getBoundingClientRect().top;
-            savedRange = range.cloneRange();
-            sel.modify("move", up ? "backward" : "forward", "line");
-            console.log("down", top, up ? "up" : "down");
+        ret.arrow = ret.up || ret.down || ret.left || ret.right;
+        ret.upDown = ret.up || ret.down;
+        return ret;
+    }
+    function rangeDown (ev) {
+        var d = details(ev);
+        if (d.upDown) {
+            top = d.range.getBoundingClientRect().top;
+            savedRange = d.range.cloneRange();
+            d.sel.modify("move", d.up ? "backward" : "forward", "line");
         }
     }
     function rangePress (ev) {
-        var sel = window.getSelection()
-        ,   range = sel.getRangeAt(0)
-        ,   atBoundary = (top - range.getBoundingClientRect().top) === 0
-        ,   kc = ev.keyCode
-        ,   up = kc === 38
-        ,   dn = kc === 40
-        ,   lf = kc === 37
-        ,   rt = kc === 39
-        ,   arrow = up || dn || lf || rt
-        ,   ud = up || dn
+        var d = details(ev)
+        ,   atBoundary = (top - d.range.getBoundingClientRect().top) === 0
         ;
-        if (ud && atBoundary) {
-            console.log("at boundary");
+        if (d.upDown && atBoundary) {
+            console.log("at boundary", d.up ? "top" : "bottom");
             // XXX
             //  fire an event indicating direction
             //  the default behaviour is to go to start/end of line (well, do the modify again)
@@ -44,10 +44,10 @@
             //  turn this into a proper implementation of the idea from the Substance guys
             //  see if this works on other browsers too
             //  apply to all data-cursorable
-            sel.removeAllRanges();
-            sel.addRange(savedRange);
+            d.sel.removeAllRanges();
+            d.sel.addRange(savedRange);
         }
-        if (ud) ev.preventDefault();
+        if (d.upDown || !d.arrow) ev.preventDefault();
     }
     
     var x2 = document.getElementById("x2");
