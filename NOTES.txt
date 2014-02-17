@@ -18,6 +18,7 @@ STUFF:
             - <input name=foo value=x>
               <input name=foo[0] value=y>
                 -> { foo: { "": "x", 0: "y" }}
+        - if error in the syntax, just use the string as is
                 
     - Improved FormData?
     - <form src>
