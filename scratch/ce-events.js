@@ -1,13 +1,6 @@
 
-// NOTES
-//  maybe we can use selection.modify() to know if we are at a boundary or not
-//  depending on where the cursor ends up afterwards, we can guess that we are at a
-//  boundary (especially if by luck it does not move)
-//
-//  if we can cancel the default behaviour for up and down, maybe we can handle it ourselves?
-
 (function () {
-    var top = NaN, savedRange;
+    var top = NaN, savedRange, wasCollapsed;
     function details (ev) {
         var kc = ev.keyCode
         ,   ret = {
@@ -25,8 +18,9 @@
     }
     function rangeDown (ev) {
         var d = details(ev);
-        if (d.upDown) {
+        if (d.upDown && !ev.shiftKey && d.range.collapsed) {
             top = d.range.getBoundingClientRect().top;
+            wasCollapsed = d.range.collapsed;
             savedRange = d.range.cloneRange();
             d.sel.modify("move", d.up ? "backward" : "forward", "line");
         }
@@ -34,8 +28,9 @@
     function rangePress (ev) {
         var d = details(ev)
         ,   atBoundary = (top - d.range.getBoundingClientRect().top) === 0
+        ,   collapseChanged = !wasCollapsed && d.range.collapsed
         ;
-        if (d.upDown && atBoundary) {
+        if (d.upDown && atBoundary && !collapseChanged) {
             console.log("at boundary", d.up ? "top" : "bottom");
             // XXX
             //  fire an event indicating direction
@@ -44,21 +39,31 @@
             //  turn this into a proper implementation of the idea from the Substance guys
             //  see if this works on other browsers too
             //  apply to all data-cursorable
+            //  check that we properly handle keyboard-based selections:
+            //      - by and large we do, except when going up/down. We need to handle that
+            //        by checking on Shift and letting the default happen then with no boundary
+            //        detection or manipulation. Or ideally we want boundary detection anyway, if
+            //        we can get away with it
             d.sel.removeAllRanges();
             d.sel.addRange(savedRange);
         }
-        if (d.upDown || !d.arrow) ev.preventDefault();
+        if ((d.upDown && !ev.shiftKey && !collapseChanged) || !d.arrow) ev.preventDefault();
     }
     
     var x2 = document.getElementById("x2");
     x2.addEventListener("keydown", rangeDown, false);
     x2.addEventListener("keypress", rangePress, false);
-
-
-    // x2.addEventListener("keypress", showRange, false);
-    // x2.addEventListener("keydown", showRange, false);
-    //
-    // x2.addEventListener("keyup", position, false);
-    // x2.addEventListener("keypress", position, false);
-
 }());
+
+
+// Processing
+//  if not up/down return from both
+//  if shift key return from both
+
+
+//  IF range collapsed and was collapsed and and up/down and not shift
+
+
+
+
+
