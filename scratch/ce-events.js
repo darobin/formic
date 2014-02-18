@@ -6,11 +6,6 @@
 //  turn this into a proper implementation of the idea from the Substance guys
 //  see if this works on other browsers too
 //  apply to all data-cursorable
-//  check that we properly handle keyboard-based selections:
-//      - by and large we do, except when going up/down. We need to handle that
-//        by checking on Shift and letting the default happen then with no boundary
-//        detection or manipulation. Or ideally we want boundary detection anyway, if
-//        we can get away with it
 //  move everything around to have a gh-pages with the hacking published
 //  have each bit in its own module, this one is cursed.js
 
