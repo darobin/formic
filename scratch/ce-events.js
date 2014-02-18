@@ -34,24 +34,28 @@
     }
     function rangeDown (ev) {
         var d = details(ev);
-        if (d.upDown && !ev.shiftKey && d.range.collapsed) {
-            top = d.range.getBoundingClientRect().top;
-            wasCollapsed = d.range.collapsed;
-            savedRange = d.range.cloneRange();
-            d.sel.modify("move", d.up ? "backward" : "forward", "line");
-        }
+        if (!d.upDown) return;
+        if (ev.shiftKey) return;
+        top = d.range.getBoundingClientRect().top;
+        wasCollapsed = d.range.collapsed;
+        savedRange = d.range.cloneRange();
+        if (!wasCollapsed) savedRange.collapse();
+        d.sel.modify("move", d.up ? "backward" : "forward", "line");
     }
     function rangePress (ev) {
-        var d = details(ev)
-        ,   atBoundary = (top - d.range.getBoundingClientRect().top) === 0
+        var d = details(ev);
+        if (!d.upDown) return;
+        if (ev.shiftKey) return;
+        var atBoundary = (top - d.range.getBoundingClientRect().top) === 0
         ,   collapseChanged = !wasCollapsed && d.range.collapsed
         ;
-        if (d.upDown && atBoundary && !collapseChanged) {
+        if (atBoundary && !collapseChanged) {
             console.log("at boundary", d.up ? "top" : "bottom");
             d.sel.removeAllRanges();
             d.sel.addRange(savedRange);
         }
-        if ((d.upDown && !ev.shiftKey && !collapseChanged) || !d.arrow) ev.preventDefault();
+        // if ((d.upDown && !ev.shiftKey && !collapseChanged) || !d.arrow)
+        ev.preventDefault();
     }
     
     var x2 = document.getElementById("x2");
