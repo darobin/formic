@@ -4,7 +4,7 @@
 
 (function () {
     var filter = Array.prototype.filter
-    // ,   forEach = Array.prototype.forEach
+    ,   forEach = Array.prototype.forEach
     ;
     var formic = {
         matches:    function (el, sels, refs) {
@@ -42,16 +42,95 @@
                 // Fields To Skip
                 // We don't check that objects must have loaded a plugin. Bite me.
                 // Since this is batched, we also don't know the submitter and therefore ignore them all
-                if (formic.ancestors(field).filter(function (el) { el.tagName.toLowerCase() === "datalist"; }).length) continue;
+                if (formic.ancestors(field).filter(function (el) { formic.matches(el, "datalist"); }).length) continue;
                 if (formic.disabled(field)) continue;
+                if (formic.matches(field, "button")) continue;
                 if (field.type === "submit" || field.type === "image" || field.type === "button") continue;
                 if (field.type === "checkbox" && !field.checked) continue;
                 if (field.type === "radio" && !field.checked) continue;
-                if (field.type !== "image" && !field.name) continue;
+                if (!field.name) continue;
+                var type = field.type, name = field.name;
+                
+                if (formic.matches(field, "select")) {
+                    forEach.call(field.querySelectorAll("> option, > optgroup > option")
+                            ,    function (el) {
+                                    if (!el.disabled && el.selected)
+                                        dataSet.push({
+                                            name:   name
+                                        ,   type:   type
+                                        ,   value:  el.value
+                                        ,   el:     el
+                                        });
+                                }
+                    );
+                }
+                
+                else if (type === "checkbox" || type === "radio") {
+                    dataSet.push({
+                        name:   name
+                    ,   type:   type
+                    ,   value:  field.value || "on"
+                    ,   el:     field
+                    });
+                }
 
-                // XXX take files into account
-
+                else if (type === "file") {
+                    if (field.fileList.length === 0) {
+                        dataSet.push({ name: name, type: "application/octet-stream", value: "" });
+                    }
+                    else {
+                        forEach.call(field.fileList
+                                ,    function (f) {
+                                        dataSet.push({
+                                            name:   name
+                                        ,   type:   type
+                                        ,   value: {
+                                                type:   f.type
+                                            ,   name:   f.name
+                                            ,   body:   f
+                                            }
+                                        ,   el: field
+                                        });
+                                     }
+                        );
+                    }
+                }
+                // here we could process objects. but we won't
+                
+                else {
+                    dataSet.push({
+                        name:   name
+                    ,   type:   type
+                    ,   value:  field.value
+                    ,   el:     field
+                    });
+                }
+                
+                if (type === "textarea" || type === "text" || type === "search") {
+                    if (field.getAttribute("dirname")) {
+                        // here we should fully determine the directionality, but we cheat
+                        dataSet.push({
+                            name:   field.getAttribute("dirname")
+                        ,   type:   "direction"
+                        ,   value:  field.dir || "auto"
+                        ,   el:     field
+                        });
+                    }
+                }
             }
+            
+            // clean up the CRLF
+            for (var i = 0, n = dataSet.length; i < n; i++) {
+                var d = dataSet[i];
+                if (d.type === "textarea" || d.type === "file") continue;
+                d.value = d.value
+                           .replace(/\r(?!\n)/g, "\r\n")
+                           .split("").reverse().join("") // where the fuck are my lookbehinds?
+                           .replace(/\n(?!\r)/, "\n\r")
+                           .split("").reverse().join("")
+                ;
+            }
+            
             return dataSet;
         }
     };

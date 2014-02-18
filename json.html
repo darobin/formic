@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>formic — json</title>
+    <link rel='stylesheet' href='css/formic.css'>
+  </head>
+  <body>
+    <header>
+      <h1>json</h1>
+    </header>
+    <section>
+      <p>
+        <small>Return <a href='index.html'>home</a>.</small>
+      </p>
+      <p>
+        This is an experiment to see if it's possible (and useful) to support 
+        <code>enctype="application/json"</code> on forms.
+      </p>
+    </section>
+    <section>
+      <h2>Example</h2>
+      <form id='x'>
+        <input type=text name='dupe' value='A'>
+        <input type=text name='dupe' value='B'>
+        <input type=text name='second[1]' value='X'>
+        <input type=text name='obj[bar]' value='X'>
+        <input type=text name='obj[bar][0]' value='X'>
+        <input type=text name='obj[0][bar]' value='X'>
+        <input type=text name='deep[one][two][three][4][five][6][7][eight]' value='X'>
+        <input type=text name='append[]' value='X'>
+        <input type=text name='append[]' value='Y'>
+        <input type=text name='appends[][]' value='X'>
+        <input type=text name='appends[][]' value='Y'>
+        <input type=text name='str-obj' value='empty'>
+        <input type=text name='str-obj[bar]' value='bar'>
+        <input type=text name='str-arr' value='empty'>
+        <input type=text name='str-obj[0]' value='zero'>
+        <input type=text name='obj-arr[bar]' value='obj'>
+        <input type=text name='obj-arr[0]' value='arr'>
+        <input type=text name='err[' value='X'>
+        <input type=text name='err[bar]x' value='X'>
+        <input type=text name='err[bar][foo][bax]]' value='X'>
+        <input type=text name='err[bar]x[foo]' value='X'>
+      </form>
+
+      <pre id='log'></pre>
+    </section>
+    <footer>
+      <h3>formic</h3>
+      <p><small>hacking on forms and editability</small></p>
+    </footer>
+    <script src='formic.js'></script>
+    <script src='json.js'></script>
+    <script>
+      var j = applicationJSON(document.getElementById("x"));
+      document.getElementById("log").textContent = JSON.stringify(j, null, 4);
+    </script>
+  </body>
+</html>

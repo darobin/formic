@@ -1,5 +1,15 @@
 /*global CustomEvent*/
 
+// IMPROVEMENT
+//  forget about boundary detection for now, only do:
+//  - when there is a selection change, dispatch an event with the old and new. If it is cancelled,
+//    set selection to the old
+//  - when typing happens, dispatch an event. If it is not cancelled, let it happen, otherwise do.
+//  - note that typing and all need to know what they apply to, notably deletion or insertion
+//  - maybe just use an "editable" attribute for this
+//  - demo usage with an MVC approach, including some basic editing commands, intercepting the
+//    Enter key
+
 // XXX
 //  fire an event indicating direction
 
