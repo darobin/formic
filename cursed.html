@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>formic — cursed</title>
+    <link rel='stylesheet' href='css/formic.css'>
+  </head>
+  <body>
+    <header>
+      <h1>cursed</h1>
+    </header>
+    <section>
+      <p>
+        <small>Return <a href='index.html'>home</a>.</small>
+      </p>
+      <p>
+        One option that could help fix <code>contentEditable</code>, suggested by our friends at
+        <a href='http://substance.io/'>substance</a>, would be to simply expose a primitive way of
+        making an element accept focus and a cursor, but have this cursor do nothing at all apart
+        from being movable. None of the DOM manipulations possible with <code>contentEditable</code>
+        such as inserting characters, deleting, running commands is possible. Those are entirely
+        the responsibility of code written to handle them.
+      </p>
+      <p>
+        While this may seem like a step back, it can actually provide a far more reliable entry
+        point with which to write editors. The less the browser does, the fewer bugs there will
+        be. It also enables a simple MVC approach whereby script intercepts events that intend to
+        manipulate the content, use those to modify a data model that is <em>not</em> the underlying
+        DOM, and that data model change then causes a rendering change. It may seem indirect but is
+        actually a much saner way of handling editing.
+      </p>
+      <p>
+        This behaviour is enabled by setting a <code>cursed</code> attribute on a given element
+        (while I await inspiration as to a better name).
+      </p>
+      <p>
+        In addition to simple, selecting but not editing behaviour, whenever the user tries to move
+        the caret across the top or bottom boundary of a given element an event is triggered
+        (currently called <code>cursed-boundary</code>) with <code>ev.detail.side</code> set to
+        <code>top</code> or <code>bottom</code>. The point of this event is to enable the use case
+        in which individual elements are made cursed but in between each of those is an item that
+        must not be editable (possibly some affordance), thereby making it less convenient to set
+        their common parent as cursed. The boundary event can be caught so as to move the focus
+        between editable siblings.
+      </p>
+      <p>
+        The current behaviour of selections and ranges in browsers is so much all over the place
+        (and in many case so useless) that a proper polyfill for this is probably impossible.
+      </p>
+      <p>
+        <strong>WARNING</strong>: This code works in <em>Gecko</em>, it is known 
+        <strong>NOT</strong> to work in <em>Blink</em> and <em>WebKit</em>. <em>IE</em> has not been
+        tested yet.
+      </p>
+      <p>
+        Gecko also has an appalling selection bug that causes it to report the position of the 
+        cursor at the end of the previous line when it is in fact at the start of the current. This
+        causes wrong behaviours: when arrowing up or down it can detect boundary too early, 
+        paralysing the cursor. There is no code workaround that I knew to devise. Arrow right to get
+        unstuck.
+      </p>
+    </section>
+    <section>
+      <h2>Example</h2>
+      <p cursed>
+        All of the paragraphs in this section have been cursed. A red border gets added when the
+        boundary event is triggered.
+      </p>
+      <p cursed>
+        The preceding sections have demonstrated that information can be measured on different
+        scales: in hits, in bits, in dollars. The next question: is there some property that should
+        be common to all the information measures?
+      </p>
+      <p cursed>
+        To begin with, we imagine two newspapers, one in English and the other in Chinese, both
+        giving the same account of an event. Then, objectively speaking, both newspapers contain the
+        same amount of information about the event. Still, an Englishman may be of the opinion that
+        only the English paper contains information, because he does not understand Chinese. If we
+        allow such subjective judgements, anybody may have any opinion on the information content in
+        a message, and no rules apply. But, what if we want to measure the information content of
+        the message itself, disconnected from the shortcomings of a receiver?
+      </p>
+      <p cursed>
+        We have already asked "Information about what?". Now we ask "Information to whom?". The true
+        information content of a message can be imagined as the information received by somebody
+        with a complete understanding, who is aptly called the ideal receiver in semantic
+        information theory.
+      </p>
+    </section>
+    <footer>
+      <h3>formic</h3>
+      <p><small>hacking on forms and editability</small></p>
+    </footer>
+    <script src='cursed.js'></script>
+    <script>
+      curseAll();
+      Array.prototype.forEach.call(document.querySelectorAll("[cursed]"), function (el) {
+          el.addEventListener("cursed-boundary", function (ev) {
+              console.log(ev);
+              var isTop = ev.detail.side === "top"
+              ev.currentTarget.style[isTop ? "borderTop" : "borderBottom"] = "3px solid red";
+          }, false);
+      });
+    </script>
+  </body>
+</html>
