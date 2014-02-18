@@ -15,8 +15,13 @@
 //  have each bit in its own module, this one is cursed.js
 
 
+
+// XXX this implementation does not work in WebKit or Blink, IE not tested yet
 (function () {
-    var top = NaN, savedRange, wasCollapsed;
+    var top = NaN
+    ,   savedRange
+    ,   wasCollapsed
+    ;
     function details (ev) {
         var kc = ev.keyCode
         ,   ret = {
@@ -36,25 +41,25 @@
         var d = details(ev);
         if (!d.upDown) return;
         if (ev.shiftKey) return;
-        top = d.range.getBoundingClientRect().top;
+        var rect = d.range.getBoundingClientRect();
+        top = rect.top;
         wasCollapsed = d.range.collapsed;
-        savedRange = d.range.cloneRange();
-        if (!wasCollapsed) savedRange.collapse();
         d.sel.modify("move", d.up ? "backward" : "forward", "line");
+        savedRange = d.range.cloneRange();
     }
     function rangePress (ev) {
         var d = details(ev);
         if (!d.upDown) return;
         if (ev.shiftKey) return;
-        var atBoundary = (top - d.range.getBoundingClientRect().top) === 0
+        var rect = d.range.getBoundingClientRect()
+        ,   atBoundary = ((top - rect.top) === 0)
         ,   collapseChanged = !wasCollapsed && d.range.collapsed
         ;
         if (atBoundary && !collapseChanged) {
-            console.log("at boundary", d.up ? "top" : "bottom");
+            console.log("BOUNDARY:" + (d.up ? "top" : "bottom"));
             d.sel.removeAllRanges();
             d.sel.addRange(savedRange);
         }
-        // if ((d.upDown && !ev.shiftKey && !collapseChanged) || !d.arrow)
         ev.preventDefault();
     }
     
@@ -62,6 +67,16 @@
     x2.addEventListener("keydown", rangeDown, false);
     x2.addEventListener("keypress", rangePress, false);
 }());
+
+// the problem occurs when we are at the start of the selection
+
+// have selection to top line, press Up (cursor goes to beginning of line)
+//  rangeDown top=83, wasCollapsed=false
+//  rangePress atBoundary=true, collapseChanged=true, top=83, wasCollapsed=false
+// press Down
+//  rangeDown top=83, wasCollapsed=true
+//  rangePress atBoundary=true, collapseChanged=false, top=83, wasCollapsed=true
+// at boundary bottom
 
 
 // Processing
