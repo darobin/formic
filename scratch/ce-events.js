@@ -1,4 +1,20 @@
 
+// XXX
+//  fire an event indicating direction
+//  the default behaviour is to go to start/end of line (well, do the modify again)
+//  but it can be cancelled
+//  turn this into a proper implementation of the idea from the Substance guys
+//  see if this works on other browsers too
+//  apply to all data-cursorable
+//  check that we properly handle keyboard-based selections:
+//      - by and large we do, except when going up/down. We need to handle that
+//        by checking on Shift and letting the default happen then with no boundary
+//        detection or manipulation. Or ideally we want boundary detection anyway, if
+//        we can get away with it
+//  move everything around to have a gh-pages with the hacking published
+//  have each bit in its own module, this one is cursed.js
+
+
 (function () {
     var top = NaN, savedRange, wasCollapsed;
     function details (ev) {
@@ -32,18 +48,6 @@
         ;
         if (d.upDown && atBoundary && !collapseChanged) {
             console.log("at boundary", d.up ? "top" : "bottom");
-            // XXX
-            //  fire an event indicating direction
-            //  the default behaviour is to go to start/end of line (well, do the modify again)
-            //  but it can be cancelled
-            //  turn this into a proper implementation of the idea from the Substance guys
-            //  see if this works on other browsers too
-            //  apply to all data-cursorable
-            //  check that we properly handle keyboard-based selections:
-            //      - by and large we do, except when going up/down. We need to handle that
-            //        by checking on Shift and letting the default happen then with no boundary
-            //        detection or manipulation. Or ideally we want boundary detection anyway, if
-            //        we can get away with it
             d.sel.removeAllRanges();
             d.sel.addRange(savedRange);
         }
@@ -61,7 +65,24 @@
 //  if shift key return from both
 
 
-//  IF range collapsed and was collapsed and and up/down and not shift
+//  IF range collapsed and was collapsed
+//      rangeDown: save range, try move
+//      rangePress: restore range, preventDefault
+//  IF range collapsed and was NOT collapsed
+//      rangeDown: save a range that's at the proper side of the selection depending on direction
+//                 try move
+//      rangePress: restore range, preventDefault
+//  IF range NOT collapsed and was collapsed
+//      this should not happen since we return on shiftKey
+//  IF range NOT collapsed and was NOT collapsed
+//      this should not happen since we return on shiftKey
+
+
+
+// One alternative to look into could be to use the same old code that did not take selection
+// into account, and simply switch move for extend in modify() when shift is pressed?
+//
+// Important: check what happens when the selection is made with the mouse then navigation happens
 
 
 
