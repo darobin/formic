@@ -1,17 +1,27 @@
 /*global formic*/
 
 (function () {
+    function isArray (obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    }
+    // XXX note that we should ensure that file values return false for this
+    function isObject (obj) {
+        if (isArray(obj)) return false;
+        if (typeof obj !== "object") return false;
+        if (obj.constructor && !obj.constructor.prototype.hasOwnProperty("isPrototypeOf")) return false;
+        return true;
+    }
     function parseSteps (name) {
         var steps = []
         ,   orig = name // keep in case parsing fails
         ,   ok = false
         ;
         name = name.replace(/^([^\[]+)/, function (m, p1) {
-            steps.push({ type: "root", val: p1 });
+            steps.push({ type: "object", key: p1 });
             ok = true;
             return "";
         });
-        if (!ok) return [{ type: "root", val: orig, last: true }];
+        if (!ok) return [{ type: "object", key: orig, last: true }];
         if (!name.length) {
             steps[0].last = true;
             return steps;
@@ -26,22 +36,63 @@
             });
             if (ok) continue;
             name = name.replace(/^\[(\d+)\]/, function (m, p1) {
-                steps.push({ type: "array", val: (1 * p1) });
+                steps.push({ type: "array", key: (1 * p1) });
                 ok = true;
                 return "";
             });
             if (ok) continue;
             name = name.replace(/^\[([^\]]+)\]/, function (m, p1) {
-                steps.push({ type: "object", val: p1 });
+                steps.push({ type: "object", key: p1 });
                 ok = true;
                 return "";
             });
             if (ok) continue;
-            return [{ type: "root", val: orig, last: true }];
+            return [{ type: "object", key: orig, last: true }];
         }
-
-        steps[steps.length - 1].last = true;
+        
+        for (var i = 0, n = steps.length; i < n; i++) {
+            var step = steps[i];
+            if (i + 1 < n) step.next = steps[i + 1].type;
+            else step.last = true;
+        }
         return steps;
+    }
+    function setValue (context, step, current, value) {
+        // this just works for contexts that are objects
+        if (step.last) {
+            // there is no key, just set it
+            if (current === undefined) context[step.key] = value;
+            // there are already multiple keys, push it
+            else if (isArray(current)) context[step.key].push(value);
+            // we're trying to set a scalar on an object
+            else if (isObject(current)) {
+                return setValue(current, { type: "object", key: "", last: true }, current[""], value);
+            }
+            // there's already a scalar, pimp to array
+            else context[step.key] = [current, value];
+            return context;
+        }
+        // this works only because we're assuming objects
+        else {
+            // there is no key, just define a new object
+            if (current === undefined) return context[step.key] = {};
+            // it's already an object
+            else if (isObject(current)) return context[step.key];
+            // there is an array, we convert its defined items to an object
+            else if (isArray(current)) {
+                var obj = {};
+                for (var i = 0, n = current.length; i < n; i++) {
+                    var item = current[i];
+                    if (item !== undefined) obj[i] = item;
+                }
+                return context[step.key] = obj;
+            }
+            // there is a scalar
+            else {
+                return context[step.key] = { "": current };
+            }
+            
+        }
     }
     window.applicationJSON = function (form) {
         var data = formic.formDataSet(form)
@@ -50,13 +101,25 @@
         for (var i = 0, n = data.length; i < n; i++) {
             var item = data[i]
             ,   steps = parseSteps(item.name)
+            ,   cur = ret
             ;
+            for (var j = 0, m = steps.length; j < m; j++) {
+                var step = steps[j]
+                ,   curValue = cur[step.key]
+                ;
+                cur = setValue(cur, step, curValue, item.value);
+            }
+            
             console.log(steps);
         }
         
         return ret;
     };
 }());
+
+// XXX
+//  TEST:
+//      foo[bar], foo should work the same as foo, foo[bar]
 
 // - use structured field names as commonly employed in PHP
 // - foo -> { foo: "val" }
