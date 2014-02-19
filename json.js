@@ -30,11 +30,15 @@
         while (name.length) {
             var ok = false;
             name = name.replace(/^\[\]/, function () {
-                steps.push({ type: "append" });
+                steps[steps.length - 1].append = true;
                 ok = true;
                 return "";
             });
-            if (ok) continue;
+            // we had a match, but appends can only occur at the end
+            if (ok) {
+                if (name.length) return [{ type: "object", key: orig, last: true }];
+                break;
+            }
             name = name.replace(/^\[(\d+)\]/, function (m, p1) {
                 steps.push({ type: "array", key: (1 * p1) });
                 ok = true;
@@ -58,10 +62,9 @@
         return steps;
     }
     function setValue (context, step, current, value) {
-        // this just works for contexts that are objects
         if (step.last) {
             // there is no key, just set it
-            if (current === undefined) context[step.key] = value;
+            if (current === undefined) context[step.key] = step.append ? [value] : value;
             // there are already multiple keys, push it
             else if (isArray(current)) context[step.key].push(value);
             // we're trying to set a scalar on an object
@@ -72,30 +75,32 @@
             else context[step.key] = [current, value];
             return context;
         }
-        // this works only because we're assuming objects
+        // this works only because we're assuming the next step is an object
         else {
             // there is no key, just define a new object
-            if (current === undefined) return context[step.key] = {};
+            if (current === undefined) return context[step.key] = (step.next === "array" ? [] : {});
             // it's already an object
             else if (isObject(current)) return context[step.key];
             // there is an array, we convert its defined items to an object
             else if (isArray(current)) {
-                var obj = {};
-                for (var i = 0, n = current.length; i < n; i++) {
-                    var item = current[i];
-                    if (item !== undefined) obj[i] = item;
+                if (step.next === "array") return current;
+                else {
+                    var obj = {};
+                    for (var i = 0, n = current.length; i < n; i++) {
+                        var item = current[i];
+                        if (item !== undefined) obj[i] = item;
+                    }
+                    return context[step.key] = obj;
                 }
-                return context[step.key] = obj;
             }
             // there is a scalar
             else {
                 return context[step.key] = { "": current };
             }
-            
         }
     }
     window.applicationJSON = function (form) {
-        var data = formic.formDataSet(form)
+        var data = formic.formDataSet(form, { booleanChecked: true })
         ,   ret = {}
         ;
         for (var i = 0, n = data.length; i < n; i++) {
@@ -104,13 +109,9 @@
             ,   cur = ret
             ;
             for (var j = 0, m = steps.length; j < m; j++) {
-                var step = steps[j]
-                ,   curValue = cur[step.key]
-                ;
-                cur = setValue(cur, step, curValue, item.value);
+                var step = steps[j];
+                cur = setValue(cur, step, cur[step.key], item.value);
             }
-            
-            console.log(steps);
         }
         
         return ret;
@@ -118,9 +119,6 @@
 }());
 
 // XXX
-//  TEST:
-//      foo[bar], foo should work the same as foo, foo[bar]
-
 // - use structured field names as commonly employed in PHP
 // - foo -> { foo: "val" }
 // - foo, foo (multiple fields with that name, select, etc.) -> { foo: ["val", "val"] }
@@ -139,5 +137,3 @@
 //       <input name=foo[0] value=y>
 //         -> { foo: { "": "x", 0: "y" }}
 // - if error in the syntax, just use the string as is
-
-// for checkbox & radio, maybe we can default to true here instead of "on" when there is no value

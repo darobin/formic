@@ -33,7 +33,8 @@
     ,   disabled:   function (el) {
             return formic.matches(el, ":disabled");
         }
-    ,   formDataSet:    function (form) {
+    ,   formDataSet:    function (form, options) {
+            options = options || {};
             var controls = formic.submittableElements(form)
             ,   dataSet = []
             ;
@@ -66,10 +67,14 @@
                 }
                 
                 else if (type === "checkbox" || type === "radio") {
+                    var value;
+                    if (field.hasAttribute("value")) value = field.getAttribute("value");
+                    else if (options.booleanChecked) value = true;
+                    else value = "on";
                     dataSet.push({
                         name:   name
                     ,   type:   type
-                    ,   value:  field.value || "on"
+                    ,   value:  value
                     ,   el:     field
                     });
                 }
@@ -95,7 +100,7 @@
                         );
                     }
                 }
-                // here we could process objects. but we won't
+                // here we could process <object>. but we won't
                 
                 else {
                     dataSet.push({
@@ -123,6 +128,7 @@
             for (var i = 0, n = dataSet.length; i < n; i++) {
                 var d = dataSet[i];
                 if (d.type === "textarea" || d.type === "file") continue;
+                if (typeof d.value !== "string") continue;
                 d.value = d.value
                            .replace(/\r(?!\n)/g, "\r\n")
                            .split("").reverse().join("") // where the fuck are my lookbehinds?
