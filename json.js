@@ -4,7 +4,6 @@
     function isArray (obj) {
         return Object.prototype.toString.call(obj) === "[object Array]";
     }
-    // XXX note that we should ensure that file values return false for this
     function isObject (obj) {
         if (isArray(obj)) return false;
         if (typeof obj !== "object") return false;
@@ -99,22 +98,41 @@
             }
         }
     }
-    window.applicationJSON = function (form) {
+    window.applicationJSON = function (form, cb) {
         var data = formic.formDataSet(form, { booleanChecked: true })
         ,   ret = {}
+        ,   files = []
+        ,   read = 0
         ;
         for (var i = 0, n = data.length; i < n; i++) {
-            var item = data[i]
-            ,   steps = parseSteps(item.name)
-            ,   cur = ret
-            ;
-            for (var j = 0, m = steps.length; j < m; j++) {
-                var step = steps[j];
-                cur = setValue(cur, step, cur[step.key], item.value);
-            }
+            var item = data[i];
+            if (item.value && item.value.body) files.push(item.value);
         }
-        
-        return ret;
+        function done () {
+            for (var i = 0, n = data.length; i < n; i++) {
+                var item = data[i]
+                ,   steps = parseSteps(item.name)
+                ,   cur = ret
+                ;
+                for (var j = 0, m = steps.length; j < m; j++) {
+                    var step = steps[j];
+                    cur = setValue(cur, step, cur[step.key], item.value);
+                }
+            }
+            cb(ret);
+        }
+        function readNextFile (f) {
+            var fr = new FileReader();
+            fr.onloadend = function () {
+                if (fr.error) throw fr.error;
+                f.body = fr.result;
+                read++;
+                if (read === files.length) done();
+            };
+            fr.readAsDataURL(f.body);
+        }
+        for (var i = 0, n = files.length; i < n; i++) readNextFile(files[i]);
+        if (!files.length) done();
     };
 }());
 

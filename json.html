@@ -21,6 +21,7 @@
     <section>
       <h2>Example</h2>
       <form id='x'>
+        <input type=file name='file'>
         <input type=text name='aaa' value='A'>
         <input type=text name='bbb' value='A'>
         <input type=text name='ccc' value='A'>
@@ -59,7 +60,7 @@
         <input type=text name='err[bar][foo][bax]]' value='X'>
         <input type=checkbox name='err[bar]x[foo]' checked>
       </form>
-
+      <button id='redump'>Redump</button>
       <pre id='log'></pre>
     </section>
     <footer>
@@ -69,8 +70,13 @@
     <script src='formic.js'></script>
     <script src='json.js'></script>
     <script>
-      var j = applicationJSON(document.getElementById("x"));
-      document.getElementById("log").textContent = JSON.stringify(j, null, 4);
+      function dumpJSON () {
+          applicationJSON(document.getElementById("x"), function (j) {
+              document.getElementById("log").textContent = JSON.stringify(j, null, 4);
+          });
+      }
+      dumpJSON();
+      document.getElementById("redump").onclick = dumpJSON;
     </script>
   </body>
 </html>

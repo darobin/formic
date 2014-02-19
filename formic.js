@@ -80,11 +80,11 @@
                 }
 
                 else if (type === "file") {
-                    if (field.fileList.length === 0) {
+                    if (field.files.length === 0) {
                         dataSet.push({ name: name, type: "application/octet-stream", value: "" });
                     }
                     else {
-                        forEach.call(field.fileList
+                        forEach.call(field.files
                                 ,    function (f) {
                                         dataSet.push({
                                             name:   name
