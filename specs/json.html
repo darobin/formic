@@ -27,7 +27,11 @@
   <body>
     <section id='abstract'>
       <p>
-        XXX
+        This specification defines a new form encoding algorithm that enables the transmission of
+        form data as JSON. Instead of capturing form data as essentially an array of key-value pairs
+        which is the bread and butter of existing form encodings, it relies on a simple
+        <code>name</code> attribute syntax that makes it possible to capture rich data structures
+        as JSON directly.
       </p>
     </section>
     <section id='sotd'>
@@ -40,8 +44,63 @@
     <section class='informative'>
       <h2>Introduction</h2>
       <p>
-        XXX
+        JSON is commonly used as an exchange format between Web client and backend services. 
+        Enabling HTML forms to submit JSON directly simplifies implementation as it enables backend
+        services to operate by accepting a single input format that is what's more able to encode
+        richer structure than other form encodings (where structure has traditional had to be
+        emulated).
       </p>
+      <p>
+        User agents that implement this specification will transmit JSON data from their forms 
+        whenever the form's <code>enctype</code> attribute is set to <code>application/json</code>.
+        During the transition period, user agents that do not support this encoding will fall back
+        to using <code>application/x-www-form-urlencoded</code>. This can be detected on the server
+        side, and the conversion algorithm described in this specification can be used to convert
+        such data to JSON.
+      </p>
+      <p>
+        The path format used in input <code>name</code>s is straightforward. To begin with, when
+        no structuring information is present, the information will simply be captured as keys in
+        a JSON object:
+      </p>
+      <pre class='example highlight' title='Basic keys'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;name&#x27; value=&#x27;Bender&#x27;&gt;
+          &lt;select name=&#x27;hind&#x27;&gt;
+            &lt;option selected&gt;Bitable&lt;/option&gt;
+            &lt;option&gt;Kickable&lt;/option&gt;
+          &lt;/select&gt;
+          &lt;input type=&#x27;checkbox&#x27; name=&#x27;shiny&#x27; checked&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+          "name":   "Bender"
+        , "hind":   "Bitable"
+        , "shiny":  true
+        }
+      </pre>
+      <p>
+        If a path is repeated, its value is captured as an array:
+      </p>
+      <pre class='example highlight' title='Multiple values'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input type=&#x27;number&#x27; name=&#x27;bottle-on-wall&#x27; value=&#x27;1&#x27;&gt;
+          &lt;input type=&#x27;number&#x27; name=&#x27;bottle-on-wall&#x27; value=&#x27;2&#x27;&gt;
+          &lt;input type=&#x27;number&#x27; name=&#x27;bottle-on-wall&#x27; value=&#x27;3&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+          "bottle-on-wall":   [1, 2, 3]
+        }
+      </pre>
+      <!--
+        - explain key format
+        - give examples
+        - mention files
+        - check all examples
+      -->
       <section>
         <h2>Issues</h2>
         <p>
