@@ -242,10 +242,24 @@
             ]
         }
       </pre>
+      <p>
+        Still in the spirit of not losing information, whenever a path makes use of an invalid 
+        syntax, it is simply used whole as if it were just a key with no structure:
+      </p>
+      <pre class='example highlight' title='Files'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;error[good]&#x27; value='BOOM!'&gt;
+          &lt;input name=&#x27;error[bad&#x27; value='BOOM BOOM!'&gt;
+        &lt;/form&gt;
 
-      <!--
-        - check all examples
-      -->
+        // assuming the user has selected two text files, produces:
+        {
+            "error": {
+                "good":   "BOOM!"
+            }
+        ,   "error[bad":  "BOOM BOOM!"
+        }
+      </pre>
       <section>
         <h2>Issues</h2>
         <p>

@@ -53,7 +53,8 @@
                 var type = field.type, name = field.name;
                 
                 if (formic.matches(field, "select")) {
-                    forEach.call(field.querySelectorAll("> option, > optgroup > option")
+                    // XXX this should be "> option, > optgroup > option" but it can't be
+                    forEach.call(field.querySelectorAll("option")
                             ,    function (el) {
                                     if (!el.disabled && el.selected)
                                         dataSet.push({
