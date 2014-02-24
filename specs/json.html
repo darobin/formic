@@ -169,7 +169,7 @@
         cause the non-null values of that array to be set on the object using their array indices
         as keys. This is exemplified below:
       </p>
-      <pre class='example highlight' title='Even Deeper'>
+      <pre class='example highlight' title='Merge Behaviour'>
         &lt;form enctype=&#x27;application/json&#x27;&gt;
           &lt;input name=&#x27;mix&#x27; value=&#x27;scalar&#x27;&gt;
           &lt;input name=&#x27;mix[0]&#x27; value=&#x27;array 1&#x27;&gt;
@@ -205,7 +205,7 @@
         items, and without resorting to indices, one may use the append notation (only as the final
         step in a path):
       </p>
-      <pre class='example highlight' title='Even Deeper'>
+      <pre class='example highlight' title='Append'>
         &lt;form enctype=&#x27;application/json&#x27;&gt;
           <input name='highlander[]' value='one'>
         &lt;/form&gt;
@@ -216,11 +216,34 @@
         }
       </pre>
       <p>
-        The JSON encoding also supports file uploads:
+        The JSON encoding also supports file uploads. The values of files are themselves structured
+        as objects and contain a <code>type</code> field indicating the MIME type, a 
+        <code>name</code> field containing the file name, and a <code>body</code> field with the
+        file's content as base64.
       </p>
+      <pre class='example highlight' title='Files'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          <input type='file' name='file' multiple>
+        &lt;/form&gt;
+
+        // assuming the user has selected two text files, produces:
+        {
+            "file": [
+                {
+                    "type": "text/plain",
+                    "name": "dahut.txt",
+                    "body": "REFBQUFBQUFIVVVVVVVVVVVVVCEhIQo="
+                },
+                {
+                    "type": "text/plain",
+                    "name": "litany.txt",
+                    "body": "SSBtdXN0IG5vdCBmZWFyLlxuRmVhciBpcyB0aGUgbWluZC1raWxsZXIuCg=="
+                }
+            ]
+        }
+      </pre>
 
       <!--
-        - mention files
         - check all examples
       -->
       <section>
