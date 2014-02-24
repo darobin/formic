@@ -63,7 +63,7 @@
         no structuring information is present, the information will simply be captured as keys in
         a JSON object:
       </p>
-      <pre class='example highlight' title='Basic keys'>
+      <pre class='example highlight' title='Basic Keys'>
         &lt;form enctype=&#x27;application/json&#x27;&gt;
           &lt;input name=&#x27;name&#x27; value=&#x27;Bender&#x27;&gt;
           &lt;select name=&#x27;hind&#x27;&gt;
@@ -83,7 +83,7 @@
       <p>
         If a path is repeated, its value is captured as an array:
       </p>
-      <pre class='example highlight' title='Multiple values'>
+      <pre class='example highlight' title='Multiple Values' id='multiple-values'>
         &lt;form enctype=&#x27;application/json&#x27;&gt;
           &lt;input type=&#x27;number&#x27; name=&#x27;bottle-on-wall&#x27; value=&#x27;1&#x27;&gt;
           &lt;input type=&#x27;number&#x27; name=&#x27;bottle-on-wall&#x27; value=&#x27;2&#x27;&gt;
@@ -95,9 +95,131 @@
           "bottle-on-wall":   [1, 2, 3]
         }
       </pre>
+      <p>
+        Deeper structures can be produced using sub-keys in the path, using either string keys for
+        objects or integer keys for arrays:
+      </p>
+      <pre class='example highlight' title='Deeper Structure'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;pet[species]&#x27; value=&#x27;Dahut&#x27;&gt;
+          &lt;input name=&#x27;pet[name]&#x27; value=&#x27;Hypatia&#x27;&gt;
+          &lt;input name=&#x27;kids[1]&#x27; value=&#x27;Thelma&#x27;&gt;
+          &lt;input name=&#x27;kids[0]&#x27; value=&#x27;Ashley&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+            "pet":  {
+                "species":  "Dahut"
+            ,   "name":     "Hypatia"
+            }
+        ,   "kids":   ["Ashley", "Thelma"]
+        }
+      </pre>
+      <p>
+        As you can see above, the keys for array values can be in any order. If the array is somehow
+        sparse, then <code>null</code> values are inserted:
+      </p>
+      <pre class='example highlight' title='Sparse Arrays' id='sparse-arrays'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;hearbeat[0]&#x27; value=&#x27;thunk&#x27;&gt;
+          &lt;input name=&#x27;hearbeat[2]&#x27; value=&#x27;thunk&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+            "hearbeat":   ["thunk", null, "thunk"]
+        }
+      </pre>
+      <p>
+        Paths can cause structures to nest to arbitrary depths:
+      </p>
+      <pre class='example highlight' title='Even Deeper'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;pet[0][species]&#x27; value=&#x27;Dahut&#x27;&gt;
+          &lt;input name=&#x27;pet[0][name]&#x27; value=&#x27;Hypatia&#x27;&gt;
+          &lt;input name=&#x27;pet[1][species]&#x27; value=&#x27;Stupid Cat&#x27;&gt;
+          &lt;input name=&#x27;pet[1][name]&#x27; value=&#x27;Billie&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+            "pet":  [
+                {
+                    "species":  "Dahut"
+                ,   "name":     "Hypatia"
+                }
+            ,   {
+                    "species":  "Stupid Cat"
+                ,   "name":     "Billie"
+                }
+            ]
+        }
+      </pre>
+      <p>
+        The algorithm does not lose data in that every piece of information ends up being submitted.
+        But given the path syntax, it is possible to introduce clashes such that one may attempt
+        to set an object, an array, and a scalar value on the same key.
+      </p>
+      <p>
+        As seen in a <a href='#multiple-values'>previous example</a>, trying to set multiple scalars
+        on the same key will convert the value into an array. Trying to set a scalar value at a path
+        that also contains an object will cause the scalar to be set on that object with the
+        empty string key. Trying to set an array value at a path that also contains an object will
+        cause the non-null values of that array to be set on the object using their array indices
+        as keys. This is exemplified below:
+      </p>
+      <pre class='example highlight' title='Even Deeper'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;mix&#x27; value=&#x27;scalar&#x27;&gt;
+          &lt;input name=&#x27;mix[0]&#x27; value=&#x27;array 1&#x27;&gt;
+          &lt;input name=&#x27;mix[2]&#x27; value=&#x27;array 2&#x27;&gt;
+          &lt;input name=&#x27;mix[key]&#x27; value=&#x27;key key&#x27;&gt;
+          &lt;input name=&#x27;mix[car]&#x27; value=&#x27;car key&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+            "mix":  {
+                "":     "scalar"
+            ,   "0":    "array 1"
+            ,   "2":    "array 2"
+            ,   "key":  "key key"
+            ,   "car":  "car key"
+            }
+        }
+      </pre>
+      <p>
+        This may seem somewhat convoluted but it should be considered as a resilience mechanism
+        meant to ensure that data is not lost rather than the normal usage of the JSON encoding.
+      </p>
+      <p>
+        As we have seen above, <a href='#multiple-values'>multiple values with the same key</a>
+        are upgraded to an array, and it is also possible to <a href='#sparse-arrays'>directly
+        use array offsets</a>. However there are cases in which when generating a form from existing
+        data, one may not know if there will be one or more instances of a given key (so that 
+        without using indices one will get back at times a scalar, at times an array) and it can be
+        slightly cumbersome to properly generate array indices (especially if the field may be 
+        modified on the client side, which would mean maintaining array indices properly there). In
+        order to indicate that a given path must contain an array irrespective of the number of its
+        items, and without resorting to indices, one may use the append notation (only as the final
+        step in a path):
+      </p>
+      <pre class='example highlight' title='Even Deeper'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          <input name='highlander[]' value='one'>
+        &lt;/form&gt;
+
+        // produces
+        {
+            "highlander":  ["one"]
+        }
+      </pre>
+      <p>
+        The JSON encoding also supports file uploads:
+      </p>
+
       <!--
-        - explain key format
-        - give examples
         - mention files
         - check all examples
       -->
@@ -162,6 +284,13 @@
       <h2>The <dfn><code>application/json</code> encoding algorithm</dfn></h2>
       <p>
         XXX
+      </p>
+      <p>
+        The user agent MUST ignore every charset information (e.g. from 
+        <a><code>accept-charset</code></a>) and always encode the resulting JSON as UTF-8.
+      </p>
+      <p>
+        The user agent MUST set the MIME type of the entity body to <code>application/json</code>.
       </p>
     </section>
     <section>
