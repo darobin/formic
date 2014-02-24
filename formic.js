@@ -81,7 +81,7 @@
 
                 else if (type === "file") {
                     if (field.files.length === 0) {
-                        dataSet.push({ name: name, type: "application/octet-stream", value: "" });
+                        dataSet.push({ name: name, type: "application/octet-stream", value: "", el: field });
                     }
                     else {
                         forEach.call(field.files

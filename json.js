@@ -60,15 +60,15 @@
         }
         return steps;
     }
-    function setValue (context, step, current, value) {
+    function setValue (context, step, current, value, isFile) {
         if (step.last) {
             // there is no key, just set it
             if (current === undefined) context[step.key] = step.append ? [value] : value;
             // there are already multiple keys, push it
             else if (isArray(current)) context[step.key].push(value);
             // we're trying to set a scalar on an object
-            else if (isObject(current)) {
-                return setValue(current, { type: "object", key: "", last: true }, current[""], value);
+            else if (isObject(current) && !isFile) {
+                return setValue(current, { type: "object", key: "", last: true }, current[""], value, isFile);
             }
             // there's already a scalar, pimp to array
             else context[step.key] = [current, value];
@@ -115,8 +115,10 @@
                 ,   cur = ret
                 ;
                 for (var j = 0, m = steps.length; j < m; j++) {
-                    var step = steps[j];
-                    cur = setValue(cur, step, cur[step.key], item.value);
+                    var step = steps[j]
+                    ,   isFile = item.value && item.value.body !== undefined
+                    ;
+                    cur = setValue(cur, step, cur[step.key], item.value, isFile);
                 }
             }
             cb(ret);
@@ -125,7 +127,7 @@
             var fr = new FileReader();
             fr.onloadend = function () {
                 if (fr.error) throw fr.error;
-                f.body = fr.result;
+                f.body = fr.result.replace(/^.*?,/, "");
                 read++;
                 if (read === files.length) done();
             };
