@@ -590,7 +590,61 @@
         <li>
           Otherwise, run the following substeps:
           <ol>
-            <li></li>
+            <li>
+              If <var>current value</var> is <code>undefined</code>, run the following subsubsteps:
+              <ol>
+                <li>
+                  If <var>step</var>'s next type is "array", set the <var>context</var>'s property
+                  named by the <var>step</var>'s key to a new empty <a><code>Array</code></a> and
+                  return it.
+                </li>
+                <li>
+                  Otherwise,set the <var>context</var>'s property named by the <var>step</var>'s key
+                  to a new empty <a><code>Object</code></a> and return it.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a><code>Object</code></a>, then return
+              the value of the <var>context</var>'s property named by the <var>step</var>'s key.
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a><code>Array</code></a>, then rub the 
+              following subsubsteps:
+              <ol>
+                <li>If <var>step</var>'s next type is "array", return <var>current value</var>.</li>
+                <li>
+                  Otherwise, run the following subsubsubsteps:
+                  <ol>
+                    <li>Let <var>object</var> be a new empty <a><code>Object</code></a>.</li>
+                    <li>
+                      For each <var>item</var> and zero-based index <var>i</var> in <var>current
+                      value</var>, if <var>item</var> is not <code>undefined</code> then set a
+                      property of <var>object</var> named <var>i</var> to <var>item</var>.
+                    </li>
+                    <li>
+                      Otherwise, set the <var>context</var>'s property named by the
+                      <var>step</var>'s key to <var>object</var>.
+                    </li>
+                    <li>Return <var>object</var>.</li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+              Otherwise, run the following subsubsteps:
+              <ol>
+                <li>
+                  Let <var>object</var> be a new <a><code>Object</code></a> with a property named by
+                  the empty string set to <var>current value</var>.
+                </li>
+                <li>
+                  Set the <var>context</var>'s property named by the <var>step</var>'s
+                  key to <var>object</var>.
+                </li>
+                <li>Return <var>object</var>.</li>
+              </ol>
+            </li>
           </ol>
         </li>
       </ol>

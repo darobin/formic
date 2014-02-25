@@ -74,7 +74,6 @@
             else context[step.key] = [current, value];
             return context;
         }
-        // this works only because we're assuming the next step is an object
         else {
             // there is no key, just define a new object
             if (current === undefined) return context[step.key] = (step.next === "array" ? [] : {});
