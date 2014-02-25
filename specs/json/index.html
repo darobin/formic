@@ -548,6 +548,12 @@
         <li>Let <var>entry value</var> be the entry value this algorithm is called with.</li>
         <li>Let <var>is file</var> be the is file flag this algorithm is called with.</li>
         <li>
+          If <var>is file</var> is set then replace <var>entry value</var> with an 
+          <a><code>Object</code></a> have its "name" property set to the file's name, its
+          "type" property set to the file's type, and its "body" property set to the Base64 encoding
+          of the file's body. [[!RFC2045]] <!-- XXX maybe this should be RFC4648? -->
+        </li>
+        <li>
           If <var>step</var> has its last flag set, run the following substeps:
           <ol>
             <li>
