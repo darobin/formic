@@ -23,6 +23,16 @@
           ,   issueBase:    "https://github.com/darobin/formic/issues/"
         };
     </script>
+    <style>
+      var {
+          background: #f9f9f9;
+          border:     1px solid #eee;
+          padding:    0px 2px;
+      }
+      ol li {
+          line-height:  160%;
+      }
+    </style>
   </head>
   <body>
     <section id='abstract'>
@@ -157,6 +167,34 @@
         }
       </pre>
       <p>
+        Really, any depth you might need.
+      </p>
+      <pre class='example highlight' title='Such Deep'>
+        &lt;form enctype=&#x27;application/json&#x27;&gt;
+          &lt;input name=&#x27;wow[such][deep][3][much][power][!]&#x27; value=&#x27;Amaze&#x27;&gt;
+        &lt;/form&gt;
+
+        // produces
+        {
+            "wow":  {
+                "such": {
+                    "deep": [
+                        null
+                    ,   null
+                    ,   null
+                    ,   {
+                            "much": {
+                                "power": {
+                                    "!":  "Amaze"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+      </pre>
+      <p>
         The algorithm does not lose data in that every piece of information ends up being submitted.
         But given the path syntax, it is possible to introduce clashes such that one may attempt
         to set an object, an array, and a scalar value on the same key.
@@ -260,9 +298,6 @@
         ,   "error[bad":  "BOOM BOOM!"
         }
       </pre>
-      <!--
-        XXX show example of really deep nesting
-      -->
       <section>
         <h2>Issues</h2>
         <p>
@@ -316,22 +351,193 @@
         The following terms are defined in the HTML specification. [[!HTML5]]
       </p>
       <ul>
-        <li>XXX</li>
+        <li>
+          The algorithm to 
+          <dfn title='constructing the form data set'><a href='http://www.w3.org/html/wg/drafts/html/master/forms.html#constructing-the-form-data-set'>
+          construct the form data set</a></dfn>
+        </li>
+        <li>
+          The <dfn><a href='http://www.w3.org/html/wg/drafts/html/master/forms.html#attr-form-accept-charset'><code>accept-charset</code></a></dfn> attribute.
+        </li>
+        <li>
+          <dfn><a href='http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#ascii-digits'>ASCII digits</a></dfn>
+        </li>
+      </ul>
+      <p>
+        The following terms are defined in ECMAScript. [[!ECMA-262]]
+      </p>
+      <ul>
+        <li>
+          The type
+          <dfn><a href='http://people.mozilla.org/~jorendorff/es5.html#sec-15.2'><code>Object</code></a></dfn>
+        </li>
+        <li>
+          The
+          <dfn><a href='http://people.mozilla.org/~jorendorff/es5.html#sec-15.12.3'>stringify</a></dfn> operation.
+        </li>
       </ul>
     </section>
     
     <section>
       <h2>The <dfn><code>application/json</code> encoding algorithm</dfn></h2>
       <p>
-        XXX
+        The following algorithm encodes form data as <code>application/json</code>. It operates
+        on the <var>form data set</var> obtained from <a>constructing the form data set</a>.
+        <!--
+          XXX we need to link to the form data set in HTML
+        -->
       </p>
+      <ol>
+        <li>Let <var>resulting object</var> be a new <a><code>Object</code></a>.</li>
+        <li>
+          For each entry in the <var>form data set</var>, perform these substeps:
+          <ol>
+            <li>If the entry's type is <code>file</code>, set the <var>is file</var> flag.</li>
+            <li>
+              Let <var>steps</var> be the result of running the <a>steps to parse a JSON encoding
+              path</a> on the entry's name.
+            </li>
+            <li>Let <var>context</var> be set to the value of <var>resulting object</var>.</li>
+            <li>
+              For each step in the list of <var>steps</var>, run the following subsubsteps:
+              <ol>
+                <li>
+                  Let the <var>current value</var> be the value obtained by getting the step's key
+                  from the current <var>context</var>.
+                </li>
+                <li>
+                  Run the <a>steps to set a JSON encoding value</a> with the current 
+                  <var>context</var>, the step, the <var>current value</var>, the entry's value, and
+                  the <var>is file</var> flag.
+                </li>
+                <li>
+                  Update <var>context</var> to be the value returned by the <a>steps to set a JSON
+                  encoding value</a> ran above.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Let <var>result</var> be the value returned from calling the <a>stringify</a> operation
+          with <var>resulting object</var> as its first parameter and the two remaining parameters
+          left undefined.
+        </li>
+        <li>
+          Encode <var>result</var> as UTF-8 and return the resulting byte stream.
+        </li>
+      </ol>
+      <p class='note'>
+        The algorithm above deliberately ignores any charset information (e.g. from
+        <a><code>accept-charset</code></a>) and always encodes the resulting JSON as UTF-8. This is
+        an intentionally sane behaviour.
+      </p>
+      
       <p>
-        The user agent MUST ignore every charset information (e.g. from 
-        <a><code>accept-charset</code></a>) and always encode the resulting JSON as UTF-8.
+        The <dfn>steps to parse a JSON encoding path</dfn> are as follows:
       </p>
+      <ol>
+        <li>Let <var>path</var> be the path we are to parse.</li>
+        <li>Let <var>original</var> be a copy of <path>var</path>.</li>
+        <li>Let <var>steps</var> be an empty list of steps.</li>
+        <li>
+          Let <var>first key</var> be the result of 
+          <a title='collect a sequence of characters'>collecting a sequence of characters</a> that 
+          are <em>not</em> U+005B LEFT SQUARE BRACKET ("[") from the path.
+        </li>
+        <li>
+          If <var>first key</var> is empty, jump to the step labelled <i>failure</i> below.
+        </li>
+        <li>
+          Otherwise remove the collected characters from <var>path</var> and push a step onto 
+          <var>steps</var> with its type set to "object", its key set to the collected characters,
+          and its last flag unset.
+        </li>
+        <li>
+          If the <var>path</var> is empty, set the last flag on the last step in <var>steps</var>
+          and return <var>steps</var>.
+        </li>
+        <li>
+          <i>Loop</i>:
+          While <var>path</var> is not an empty string, run these substeps:
+          <ol>
+            <li>
+              If the first two characters in <var>path</var> are U+005B LEFT SQUARE BRACKET ("[")
+              followed by U+005D RIGHT SQUARE BRACKET ("]"), run these subsubsteps:
+              <ol>
+                <li>Set the append flag on the last step in <var>steps</var>.</li>
+                <li>Remove those two characters from <var>path</var>.</li>
+                <li>
+                  If there are characters left in <var>path</var>, jump to the step labelled
+                  <i>failure</i> below.
+                </li>
+                <li>Otherwise jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If the first character in <var>path</var> is U+005B LEFT SQUARE BRACKET ("["),
+              followed by one or more <a>ASCII digits</a>, followed by U+005D RIGHT SQUARE BRACKET
+              ("]"), run these subsubsteps:
+              <ol>
+                <li>Remove the first character from <var>path</var>.</li>
+                <li>
+                  <a>Collect a sequence of characters</a> being <a>ASCII digits</a>, remove them 
+                  from <var>path</var>, and let <var>numeric key</var> be the result of interpreting
+                  them as a base-ten integer.
+                </li>
+                <li>Remove the following character from <var>path</var>.</li>
+                <li>
+                  Push a step onto <var>steps</var> with its type set to "array", its key set to the
+                  <var>numeric key</var>, and its last flag unset.
+                </li>
+                <li>Jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If the first character in <var>path</var> is U+005B LEFT SQUARE BRACKET ("["),
+              followed by one or more characters that are <em>not</em> U+005D RIGHT SQUARE BRACKET,
+              followed by U+005D RIGHT SQUARE BRACKET ("]"), run these subsubsteps:
+              <ol>
+                <li>Remove the first character from <var>path</var>.</li>
+                <li>
+                  <a>Collect a sequence of characters</a> that are <em>not</em> U+005D RIGHT SQUARE
+                  BRACKET, remove them from <var>path</var>, and let <var>object key</var> be the
+                  result.
+                </li>
+                <li>Remove the following character from <var>path</var>.</li>
+                <li>
+                  Push a step onto <var>steps</var> with its type set to "object", its key set to
+                  the <var>object key</var>, and its last flag unset.
+                </li>
+                <li>Jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If this point in the loop is reached, jump to the step labelled <i>failure</i>
+              below.
+            </li>
+          </ol>
+        </li>
+        <li>
+          For each step in <var>steps</var>, run the following substeps:
+          <ol>
+            <li>If the step is the last step, set its last flag.</li>
+            <li>Otherwise, set its next type to the type of the next step in <var>steps</var>.</li>
+          </ol>
+        </li>
+        <li>Return <var>steps</var>.</li>
+        <li>
+          <i>Failure</i>: return a list of <var>steps</var> containing a single step with its type
+          set to "object", its key set to <var>original</var>, and its last flag set.
+        </li>
+      </ol>
+      
       <p>
-        The user agent MUST set the MIME type of the entity body to <code>application/json</code>.
+        The <dfn>steps to set a JSON encoding value</dfn> are as follows:
       </p>
+      <ol>
+        <li></li>
+      </ol>
     </section>
     <section>
       <h2>Acknowledgements</h2>

@@ -111,13 +111,12 @@
         function done () {
             for (var i = 0, n = data.length; i < n; i++) {
                 var item = data[i]
+                ,   isFile = item.value && item.value.body !== undefined
                 ,   steps = parseSteps(item.name)
                 ,   cur = ret
                 ;
                 for (var j = 0, m = steps.length; j < m; j++) {
-                    var step = steps[j]
-                    ,   isFile = item.value && item.value.body !== undefined
-                    ;
+                    var step = steps[j];
                     cur = setValue(cur, step, cur[step.key], item.value, isFile);
                 }
             }
