@@ -298,49 +298,6 @@
         ,   "error[bad":  "BOOM BOOM!"
         }
       </pre>
-      <section>
-        <h2>Issues</h2>
-        <p>
-          Every part of this specification is naturally open for comments and discussion, but the
-          following items are of particular importance.
-        </p>
-        <p class='issue' data-number='1' title='JSON root types'>
-          Currently we only support JSON objects at the root, which seems sufficient. But JSON can
-          also support other root types. Are there strong use cases to add support for these
-          (knowing that it would likely complicate matters a fair bit).
-        </p>
-        <p class='issue' data-number='2' title='Path syntax'>
-          The path syntax used in name attributes was selected to match that often seen in the wild
-          in order to capture structure in forms, the idea being that it is simple and likely to be
-          close to what is already supported, thereby enabling easy fallback to existing software
-          during the transition and reusing developer habits. But if there are compelling reasons to
-          use another syntax we can investigate them.
-        </p>
-        <p class='issue' data-number='3' title='Base64'>
-          Is the representation for files the best, knowing that base64 incurs an overhead?
-        </p>
-        <p class='issue' data-number='4' title='Is append needed?'>
-          We have an "append" construct (<code>foo[]</code>) that is used for cases in which the
-          developer wishes to indicate that even if there is only one instance of a given field name
-          it should nevertheless be captured as an array. It is possible to achieve the same effect
-          by carefully generating array indices, though it is slightly cumbersome. The feature is
-          not costly in complexity, but given that it basically desugars to arrays it could be
-          dropped with no loss of functionality.
-        </p>
-        <p class='issue' data-number='5' title='Boolean radio/checkbox'>
-          With the current algorithm, radio and checkbox inputs that are checked and have no
-          <code>value</code> set are represented in JSON using a boolean <code>true</code> value
-          instead of the <code>on</code> string used in other encodings. This seems like a better
-          fit for a new encoding, but the departure from tradition may surprise some. (Note that
-          unchecked inputs will still be absent, not <code>false</code>.)
-        </p>
-        <p class='issue' data-number='6' title='Ignore charsets'>
-          The other existing encodings respect <code>accept-charset</code> (and other charset
-          selecting methods). For JSON we blithely ignore them and just use UTF-8. This is of course
-          the better thing to do, but we are open to considering that there could be issues with
-          this approach.
-        </p>
-      </section>
     </section>
     
     <section id='conformance'></section>
