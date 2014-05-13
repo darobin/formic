@@ -305,7 +305,7 @@
     <section>
       <h2>Terminology</h2>
       <p>
-        The following terms are defined in the HTML specification. [[!HTML5]]
+        The following terms are defined in the HTML specification. [[!html51]]
       </p>
       <ul>
         <li>
@@ -611,9 +611,30 @@
           </ol>
         </li>
       </ol>
-      
-      
-      
+    </section>
+    <section>
+      <h2>Form Submission</h2>
+      <p>
+        Given that there exist deployed services using JSON and ambient authentication, and given
+        that form requests are not protected by the same-origin policy by default, if this 
+        encoding were left wide open then a number of attacks would become possible. Because of 
+        this, when using the <code>application/json</code> form encoding the same-origin policy is
+        enforced.
+      </p>
+      <p>
+        When the
+        <a href='http://www.w3.org/html/wg/drafts/html/master/single-page.html#form-submission-algorithm'>form
+        submission algorithm</a> is invoked in order to
+        <a href='http://www.w3.org/html/wg/drafts/html/master/single-page.html#submit-body'>Submit
+        as entity</a> with <var>enctype</var> set to <code>application/json</code> and <var>entity
+        body</var> set to the result of applying the <a><code>application/json</code> encoding
+        algorithm</a>, causing the browsing context to
+        <a
+        href='http://www.w3.org/html/wg/drafts/html/master/single-page.html#navigate'>navigate</a>,
+        the user agent MUST invoke the
+        <a href='http://www.w3.org/html/wg/drafts/html/master/single-page.html#fetch'>fetch</a>
+        algorithm with the <i>force same-origin flag</i>.
+      </p>
     </section>
     <section>
       <h2>Acknowledgements</h2>
@@ -621,6 +642,7 @@
         Thanks to Philippe Le Hégaret for serving as a sounding board for the first version of the
         encoding algorithm.
       </p>
+      <!-- XXX add people from ML and GH issues -->
     </section>
   </body>
 </html>
