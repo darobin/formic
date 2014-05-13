@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" typeof="bibo:Document " about="" property="dcterms:language" content="en">
+<head>
+    <meta charset="utf-8">
+    <title>W3C HTML JSON form submission</title>
+    
+    
+    <style>
+      var {
+          background: #f9f9f9;
+          border:     1px solid #eee;
+          padding:    0px 2px;
+      }
+      ol li {
+          line-height:  160%;
+      }
+    </style>
+  <style>/*****************************************************************
+ * ReSpec 3 CSS
+ * Robin Berjon - http://berjon.com/
+ *****************************************************************/
+
+/* --- INLINES --- */
+em.rfc2119 { 
+    text-transform:     lowercase;
+    font-variant:       small-caps;
+    font-style:         normal;
+    color:              #900;
+}
+
+h1 acronym, h2 acronym, h3 acronym, h4 acronym, h5 acronym, h6 acronym, a acronym,
+h1 abbr, h2 abbr, h3 abbr, h4 abbr, h5 abbr, h6 abbr, a abbr {
+    border: none;
+}
+
+dfn {
+    font-weight:    bold;
+}
+
+a.internalDFN {
+    color:  inherit;
+    border-bottom:  1px solid #99c;
+    text-decoration:    none;
+}
+
+a.externalDFN {
+    color:  inherit;
+    border-bottom:  1px dotted #ccc;
+    text-decoration:    none;
+}
+
+a.bibref {
+    text-decoration:    none;
+}
+
+cite .bibref {
+    font-style: normal;
+}
+
+code {
+    color:  #ff4500;
+}
+
+/* --- TOC --- */
+.toc a, .tof a {
+    text-decoration:    none;
+}
+
+a .secno, a .figno {
+    color:  #000;
+}
+
+ul.tof, ol.tof {
+    list-style: none outside none;
+}
+
+.caption {
+    margin-top: 0.5em;
+    font-style:   italic;
+}
+
+/* --- TABLE --- */
+table.simple {
+    border-spacing: 0;
+    border-collapse:    collapse;
+    border-bottom:  3px solid #005a9c;
+}
+
+.simple th {
+    background: #005a9c;
+    color:  #fff;
+    padding:    3px 5px;
+    text-align: left;
+}
+
+.simple th[scope="row"] {
+    background: inherit;
+    color:  inherit;
+    border-top: 1px solid #ddd;
+}
+
+.simple td {
+    padding:    3px 10px;
+    border-top: 1px solid #ddd;
+}
+
+.simple tr:nth-child(even) {
+    background: #f0f6ff;
+}
+
+/* --- DL --- */
+.section dd > p:first-child {
+    margin-top: 0;
+}
+
+.section dd > p:last-child {
+    margin-bottom: 0;
+}
+
+.section dd {
+    margin-bottom:  1em;
+}
+
+.section dl.attrs dd, .section dl.eldef dd {
+    margin-bottom:  0;
+}
+
+@media print {
+    .removeOnSave {
+        display: none;
+    }
+}
+</style><style>/* --- EXAMPLES --- */
+div.example-title {
+    min-width: 7.5em;
+    color: #b9ab2d;
+}
+div.example-title span {
+    text-transform: uppercase;   
+}
+aside.example, div.example, div.illegal-example {
+    padding: 0.5em;
+    margin: 1em 0;
+    position: relative;
+    clear: both;
+}
+div.illegal-example { color: red }
+div.illegal-example p { color: black }
+aside.example, div.example {
+    padding: .5em;
+    border-left-width: .5em;
+    border-left-style: solid;
+    border-color: #e0cb52;
+    background: #fcfaee;    
+}
+
+aside.example div.example {
+    border-left-width: .1em;
+    border-color: #999;
+    background: #fff;
+}
+aside.example div.example div.example-title {
+    color: #999;
+}
+</style><style>/* --- ISSUES/NOTES --- */
+div.issue-title, div.note-title {
+    padding-right:  1em;
+    min-width: 7.5em;
+    color: #b9ab2d;
+}
+div.issue-title { color: #e05252; }
+div.note-title { color: #2b2; }
+div.issue-title span, div.note-title span {
+    text-transform: uppercase;
+}
+div.note, div.issue {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.note > p:first-child, .issue > p:first-child { margin-top: 0 }
+.issue, .note {
+    padding: .5em;
+    border-left-width: .5em;
+    border-left-style: solid;
+}
+div.issue, div.note {
+    padding: 1em 1.2em 0.5em;
+    margin: 1em 0;
+    position: relative;
+    clear: both;
+}
+span.note, span.issue { padding: .1em .5em .15em; }
+
+.issue {
+    border-color: #e05252;
+    background: #fbe9e9;
+}
+.note {
+    border-color: #52e052;
+    background: #e9fbe9;
+}
+
+
+</style><style>/* HIGHLIGHTS */
+code.prettyprint {
+    color:  inherit;
+}
+
+/* this from google-code-prettify */
+.pln{color:#000}@media screen{.str{color:#080}.kwd{color:#008}.com{color:#800}.typ{color:#606}.lit{color:#066}.pun,.opn,.clo{color:#660}.tag{color:#008}.atn{color:#606}.atv{color:#080}.dec,.var{color:#606}.fun{color:red}}@media print,projection{.str{color:#060}.kwd{color:#006;font-weight:bold}.com{color:#600;font-style:italic}.typ{color:#404;font-weight:bold}.lit{color:#044}.pun,.opn,.clo{color:#440}.tag{color:#006;font-weight:bold}.atn{color:#404}.atv{color:#060}}ol.linenums{margin-top:0;margin-bottom:0}li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}
+</style><link href="https://www.w3.org/StyleSheets/TR/W3C-WD" rel="stylesheet"><!--[if lt IE 9]><script src='https://www.w3.org/2008/site/js/html5shiv.js'></script><![endif]--></head>
+  <body id="respecDocument" role="document" class="h-entry"><div id="respecHeader" role="contentinfo" class="head">
+  <p>
+    
+      <a href="http://www.w3.org/"><img src="https://www.w3.org/Icons/w3c_home" alt="W3C" height="48" width="72"></a>
+    
+  </p>
+  <h1 class="title p-name" id="title" property="dcterms:title"><abbr title="World Wide Web Consortium">W3C</abbr> HTML JSON form submission</h1>
+  
+  <h2 id="w3c-first-public-working-draft-22-may-2014" property="dcterms:issued" datatype="xsd:dateTime" content="2014-05-21T22:00:00.000Z"><abbr title="World Wide Web Consortium">W3C</abbr> First Public Working Draft <time class="dt-published" datetime="2014-05-22">22 May 2014</time></h2>
+  <dl>
+    
+      <dt>This version:</dt>
+      <dd><a class="u-url" href="http://www.w3.org/TR/2014/WD-html-json-forms-20140522/">http://www.w3.org/TR/2014/WD-html-json-forms-20140522/</a></dd>
+      <dt>Latest published version:</dt>
+      <dd><a href="http://www.w3.org/TR/html-json-forms/">http://www.w3.org/TR/html-json-forms/</a></dd>
+    
+    
+      <dt>Latest editor's draft:</dt>
+      <dd><a href="http://darobin.github.com/formic/specs/json/">http://darobin.github.com/formic/specs/json/</a></dd>
+    
+    
+    
+    
+      <dt>Bug tracker:</dt>
+      <dd><a href="https://github.com/darobin/formic/issues/new">file a bug</a> (<a href="https://github.com/darobin/formic/issues?labels=json&amp;page=1&amp;state=open">open bugs</a>)</dd>
+    
+    
+    
+    
+    <dt>Editor:</dt>
+    <dd class="p-author h-card vcard" rel="bibo:editor" inlist=""><span typeof="foaf:Person"><a class="u-url url p-name fn" rel="foaf:homepage" property="foaf:name" content="Robin Berjon" href="http://berjon.com/">Robin Berjon</a>, <a rel="foaf:workplaceHomepage" class="p-org org h-org h-card" href="http://w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a></span>
+</dd>
+
+    
+    
+  </dl>
+  
+  
+  
+  
+    
+      <p class="copyright">
+        <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> ©
+        2014
+        
+        <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup>
+        (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>,
+        <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>,
+        <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>), 
+        
+          Some Rights Reserved: this document is dual-licensed,
+          <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY</a> and 
+          <a href="http://www.w3.org/Consortium/Legal/copyright-documents"><abbr title="World Wide Web Consortium">W3C</abbr> Document License</a>.
+        
+        <abbr title="World Wide Web Consortium">W3C</abbr> <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>,
+        <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and
+        
+          <a href="http://www.w3.org/Consortium/Legal/2013/copyright-documents-dual.html">document use</a>
+        
+        rules apply.
+      </p>
+    
+  
+  <hr>
+</div>
+    <section rel="bibo:Chapter" resource="#abstract" typeof="bibo:Chapter" datatype="" property="dcterms:abstract" class="introductory" id="abstract"><h2 id="h2_abstract" role="heading" aria-level="1">Abstract</h2>
+      <p>
+        This specification defines a new form encoding algorithm that enables the transmission of
+        form data as JSON. Instead of capturing form data as essentially an array of key-value pairs
+        which is the bread and butter of existing form encodings, it relies on a simple
+        <code>name</code> attribute syntax that makes it possible to capture rich data structures
+        as JSON directly.
+      </p>
+    </section><section rel="bibo:Chapter" resource="#sotd" typeof="bibo:Chapter" id="sotd" class="introductory"><h2 id="h2_sotd" role="heading" aria-level="1">Status of This Document</h2>
+  
+    
+      
+        <p>
+          <em>This section describes the status of this document at the time of its publication.
+          Other documents may supersede this document. A list of current <abbr title="World Wide Web Consortium">W3C</abbr> publications and the
+          latest revision of this technical report can be found in the <a href="http://www.w3.org/TR/"><abbr title="World Wide Web Consortium">W3C</abbr> technical reports index</a> at
+          http://www.w3.org/TR/.</em>
+        </p>
+        
+      <p>
+        This specification is an 
+        <a href="http://dev.w3.org/html5/decision-policy/html5-2014-plan.html#extension-specs">extension
+        specification</a> to HTML.
+      </p>
+    
+        <p>
+          This document was published by the <a href="http://www.w3.org/html/wg/">HTML Working Group</a> as a First Public Working Draft.
+          
+            This document is intended to become a <abbr title="World Wide Web Consortium">W3C</abbr> Recommendation.
+          
+          
+            If you wish to make comments regarding this document, please send them to 
+            <a href="mailto:public-html@w3.org">public-html@w3.org</a> 
+            (<a href="mailto:public-html-request@w3.org?subject=subscribe">subscribe</a>,
+            <a href="http://lists.w3.org/Archives/Public/public-html/">archives</a>).
+          
+          
+          
+          
+            All comments are welcome.
+          
+        </p>
+        
+        
+          <p>
+            Publication as a First Public Working Draft does not imply endorsement by the <abbr title="World Wide Web Consortium">W3C</abbr>
+            Membership. This is a draft document and may be updated, replaced or obsoleted by other
+            documents at any time. It is inappropriate to cite this document as other than work in
+            progress.
+          </p>
+        
+        
+        
+        <p>
+          
+            This document was produced by a group operating under the 
+            <a id="sotd_patent" about="" rel="w3p:patentRules" href="http://www.w3.org/Consortium/Patent-Policy-20040205/">5 February 2004 <abbr title="World Wide Web Consortium">W3C</abbr> Patent
+            Policy</a>.
+          
+          
+          
+            
+              <abbr title="World Wide Web Consortium">W3C</abbr> maintains a <a href="http://www.w3.org/2004/01/pp-impl/40318/status" rel="disclosure">public list of any patent
+              disclosures</a> 
+            
+            made in connection with the deliverables of the group; that page also includes
+            instructions for disclosing a patent. An individual who has actual knowledge of a patent
+            which the individual believes contains
+            <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential">Essential
+            Claim(s)</a> must disclose the information in accordance with
+            <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure">section
+            6 of the <abbr title="World Wide Web Consortium">W3C</abbr> Patent Policy</a>.
+          
+          
+        </p>
+        
+      
+    
+  
+</section><section id="toc"><h2 id="h2_toc" role="heading" aria-level="1" class="introductory">Table of Contents</h2><ul id="respecContents" role="directory" class="toc"><li class="tocline"><a class="tocxref" href="#introduction"><span class="secno">1. </span>Introduction</a></li><li class="tocline"><a class="tocxref" href="#conformance"><span class="secno">2. </span>Conformance</a></li><li class="tocline"><a class="tocxref" href="#terminology"><span class="secno">3. </span>Terminology</a></li><li class="tocline"><a class="tocxref" href="#the-application-json-encoding-algorithm"><span class="secno">4. </span>The <span><code>application/json</code> encoding algorithm</span></a></li><li class="tocline"><a class="tocxref" href="#form-submission"><span class="secno">5. </span>Form Submission</a></li><li class="tocline"><a class="tocxref" href="#acknowledgements"><span class="secno">6. </span>Acknowledgements</a></li><li class="tocline"><a class="tocxref" href="#references"><span class="secno">A. </span>References</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#normative-references"><span class="secno">A.1 </span>Normative references</a></li></ul></li></ul></section>
+    
+    <section id="introduction" class="informative">
+      <!--OddPage--><h2 id="h2_introduction" role="heading" aria-level="1"><span class="secno">1. </span>Introduction</h2><p><em>This section is non-normative.</em></p>
+      <p>
+        JSON is commonly used as an exchange format between Web client and backend services. 
+        Enabling HTML forms to submit JSON directly simplifies implementation as it enables backend
+        services to operate by accepting a single input format that is what's more able to encode
+        richer structure than other form encodings (where structure has traditional had to be
+        emulated).
+      </p>
+      <p>
+        User agents that implement this specification will transmit JSON data from their forms 
+        whenever the form's <code>enctype</code> attribute is set to <code>application/json</code>.
+        During the transition period, user agents that do not support this encoding will fall back
+        to using <code>application/x-www-form-urlencoded</code>. This can be detected on the server
+        side, and the conversion algorithm described in this specification can be used to convert
+        such data to JSON.
+      </p>
+      <p>
+        The path format used in input <code>name</code>s is straightforward. To begin with, when
+        no structuring information is present, the information will simply be captured as keys in
+        a JSON object:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 1</span>: Basic Keys</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'name'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Bender'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;select</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'hind'</span><span class="tag">&gt;</span><span class="pln">
+    </span><span class="tag">&lt;option</span><span class="pln"> </span><span class="atn">selected</span><span class="tag">&gt;</span><span class="pln">Bitable</span><span class="tag">&lt;/option&gt;</span><span class="pln">
+    </span><span class="tag">&lt;option&gt;</span><span class="pln">Kickable</span><span class="tag">&lt;/option&gt;</span><span class="pln">
+  </span><span class="tag">&lt;/select&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">'checkbox'</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'shiny'</span><span class="pln"> </span><span class="atn">checked</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+  "name":   "Bender"
+, "hind":   "Bitable"
+, "shiny":  true
+}</span></pre></div>
+      <p>
+        If a path is repeated, its value is captured as an array:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 2</span>: Multiple Values</div><pre style="" class="example highlight prettyprint prettyprinted" id="multiple-values"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">'number'</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'bottle-on-wall'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'1'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">'number'</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'bottle-on-wall'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'2'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">'number'</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'bottle-on-wall'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'3'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+  "bottle-on-wall":   [1, 2, 3]
+}</span></pre></div>
+      <p>
+        Deeper structures can be produced using sub-keys in the path, using either string keys for
+        objects or integer keys for arrays:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 3</span>: Deeper Structure</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[species]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Dahut'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[name]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Hypatia'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'kids[1]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Thelma'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'kids[0]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Ashley'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "pet":  {
+        "species":  "Dahut"
+    ,   "name":     "Hypatia"
+    }
+,   "kids":   ["Ashley", "Thelma"]
+}</span></pre></div>
+      <p>
+        As you can see above, the keys for array values can be in any order. If the array is somehow
+        sparse, then <code>null</code> values are inserted:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 4</span>: Sparse Arrays</div><pre style="" class="example highlight prettyprint prettyprinted" id="sparse-arrays"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'hearbeat[0]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'thunk'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'hearbeat[2]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'thunk'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "hearbeat":   ["thunk", null, "thunk"]
+}</span></pre></div>
+      <p>
+        Paths can cause structures to nest to arbitrary depths:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 5</span>: Even Deeper</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[0][species]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Dahut'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[0][name]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Hypatia'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[1][species]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Felis Stultus'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'pet[1][name]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Billie'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "pet":  [
+        {
+            "species":  "Dahut"
+        ,   "name":     "Hypatia"
+        }
+    ,   {
+            "species":  "Felis Stultus"
+        ,   "name":     "Billie"
+        }
+    ]
+}</span></pre></div>
+      <p>
+        Really, any depth you might need.
+      </p>
+      <div class="example"><div class="example-title"><span>Example 6</span>: Such Deep</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'wow[such][deep][3][much][power][!]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'Amaze'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "wow":  {
+        "such": {
+            "deep": [
+                null
+            ,   null
+            ,   null
+            ,   {
+                    "much": {
+                        "power": {
+                            "!":  "Amaze"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}</span></pre></div>
+      <p>
+        The algorithm does not lose data in that every piece of information ends up being submitted.
+        But given the path syntax, it is possible to introduce clashes such that one may attempt
+        to set an object, an array, and a scalar value on the same key.
+      </p>
+      <p>
+        As seen in a <a href="#multiple-values">previous example</a>, trying to set multiple scalars
+        on the same key will convert the value into an array. Trying to set a scalar value at a path
+        that also contains an object will cause the scalar to be set on that object with the
+        empty string key. Trying to set an array value at a path that also contains an object will
+        cause the non-null values of that array to be set on the object using their array indices
+        as keys. This is exemplified below:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 7</span>: Merge Behaviour</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'mix'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'scalar'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'mix[0]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'array 1'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'mix[2]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'array 2'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'mix[key]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'key key'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'mix[car]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'car key'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "mix":  {
+        "":     "scalar"
+    ,   "0":    "array 1"
+    ,   "2":    "array 2"
+    ,   "key":  "key key"
+    ,   "car":  "car key"
+    }
+}</span></pre></div>
+      <p>
+        This may seem somewhat convoluted but it should be considered as a resilience mechanism
+        meant to ensure that data is not lost rather than the normal usage of the JSON encoding.
+      </p>
+      <p>
+        As we have seen above, <a href="#multiple-values">multiple values with the same key</a>
+        are upgraded to an array, and it is also possible to <a href="#sparse-arrays">directly
+        use array offsets</a>. However there are cases in which when generating a form from existing
+        data, one may not know if there will be one or more instances of a given key (so that 
+        without using indices one will get back at times a scalar, at times an array) and it can be
+        slightly cumbersome to properly generate array indices (especially if the field may be 
+        modified on the client side, which would mean maintaining array indices properly there). In
+        order to indicate that a given path must contain an array irrespective of the number of its
+        items, and without resorting to indices, one may use the append notation (only as the final
+        step in a path):
+      </p>
+      <div class="example"><div class="example-title"><span>Example 8</span>: Append</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'highlander[]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'one'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// produces
+{
+    "highlander":  ["one"]
+}</span></pre></div>
+      <p>
+        The JSON encoding also supports file uploads. The values of files are themselves structured
+        as objects and contain a <code>type</code> field indicating the MIME type, a 
+        <code>name</code> field containing the file name, and a <code>body</code> field with the
+        file's content as base64.
+      </p>
+      <div class="example"><div class="example-title"><span>Example 9</span>: Files</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">'file'</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'file'</span><span class="pln"> </span><span class="atn">multiple</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// assuming the user has selected two text files, produces:
+{
+    "file": [
+        {
+            "type": "text/plain",
+            "name": "dahut.txt",
+            "body": "REFBQUFBQUFIVVVVVVVVVVVVVCEhIQo="
+        },
+        {
+            "type": "text/plain",
+            "name": "litany.txt",
+            "body": "SSBtdXN0IG5vdCBmZWFyLlxuRmVhciBpcyB0aGUgbWluZC1raWxsZXIuCg=="
+        }
+    ]
+}</span></pre></div>
+      <p>
+        Still in the spirit of not losing information, whenever a path makes use of an invalid 
+        syntax, it is simply used whole as if it were just a key with no structure:
+      </p>
+      <div class="example"><div class="example-title"><span>Example 10</span>: Files</div><pre style="" class="example highlight prettyprint prettyprinted"><span class="tag">&lt;form</span><span class="pln"> </span><span class="atn">enctype</span><span class="pun">=</span><span class="atv">'application/json'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'error[good]'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'BOOM!'</span><span class="tag">&gt;</span><span class="pln">
+  </span><span class="tag">&lt;input</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">'error[bad'</span><span class="pln"> </span><span class="atn">value</span><span class="pun">=</span><span class="atv">'BOOM BOOM!'</span><span class="tag">&gt;</span><span class="pln">
+</span><span class="tag">&lt;/form&gt;</span><span class="pln">
+
+// assuming the user has selected two text files, produces:
+{
+    "error": {
+        "good":   "BOOM!"
+    }
+,   "error[bad":  "BOOM BOOM!"
+}</span></pre></div>
+    </section>
+    
+    <section rel="bibo:Chapter" resource="#conformance" typeof="bibo:Chapter" id="conformance"><!--OddPage--><h2 id="h2_conformance" role="heading" aria-level="1"><span class="secno">2. </span>Conformance</h2>
+<p>
+  As well as sections marked as non-normative, all authoring guidelines, diagrams, examples,
+  and notes in this specification are non-normative. Everything else in this specification is
+  normative.
+</p>
+<p>
+  The key words <em title="MUST" class="rfc2119">MUST</em>, <em title="MUST NOT" class="rfc2119">MUST NOT</em>, <em title="REQUIRED" class="rfc2119">REQUIRED</em>, <em title="SHOULD" class="rfc2119">SHOULD</em>, <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, <em title="MAY" class="rfc2119">MAY</em>,
+  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> in this specification are to be interpreted as described in [<cite><a href="#bib-RFC2119" class="bibref">RFC2119</a></cite>].
+</p>
+</section>
+    
+    <section id="terminology">
+      <!--OddPage--><h2 id="h2_terminology" role="heading" aria-level="1"><span class="secno">3. </span>Terminology</h2>
+      <p>
+        The following terms are defined in the HTML specification. [<cite><a href="#bib-html51" class="bibref">html51</a></cite>]
+      </p>
+      <ul>
+        <li>
+          The algorithms to 
+          <dfn id="dfn-constructing-the-form-data-set" title="constructing the form data set"><a href="http://www.w3.org/html/wg/drafts/html/master/forms.html#constructing-the-form-data-set">
+          construct the form data set</a></dfn>, and to
+          <dfn id="dfn-collect-a-sequence-of-characters"><a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#collect-a-sequence-of-characters">collect a sequence of characters</a></dfn>.
+        </li>
+        <li>
+          The <dfn id="dfn-accept-charset"><a href="http://www.w3.org/html/wg/drafts/html/master/forms.html#attr-form-accept-charset"><code>accept-charset</code></a></dfn> attribute.
+        </li>
+        <li>
+          <dfn id="dfn-ascii-digits"><a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#ascii-digits">ASCII digits</a></dfn>
+        </li>
+      </ul>
+      <p>
+        The following terms are defined in ECMAScript. [<cite><a href="#bib-ECMA-262" class="bibref">ECMA-262</a></cite>]
+      </p>
+      <ul>
+        <li>
+          The types
+          <dfn id="dfn-jsonobject"><a href="http://people.mozilla.org/~jorendorff/es5.html#sec-15.12.1.2"><code>JSONObject</code></a></dfn>
+          and
+          <dfn id="dfn-jsonarray"><a href="http://people.mozilla.org/~jorendorff/es5.html#sec-15.12.1.2"><code>JSONArray</code></a></dfn>.
+        </li>
+        <li>
+          The
+          <dfn id="dfn-stringify"><a href="http://people.mozilla.org/~jorendorff/es5.html#sec-15.12.3">stringify</a></dfn> operation.
+        </li>
+      </ul>
+    </section>
+    
+    <section id="the-application-json-encoding-algorithm">
+      <!--OddPage--><h2 id="h2_the-application-json-encoding-algorithm" role="heading" aria-level="1"><span class="secno">4. </span>The <dfn id="dfn-application-json-encoding-algorithm"><code>application/json</code> encoding algorithm</dfn></h2>
+      <p>
+        For the purposes of the algorithms below, an <dfn id="dfn-object"><code>Object</code></dfn> corresponds to
+        the in-memory representation for a <a class="internalDFN" href="#dfn-jsonobject"><code>JSONObject</code></a> and an
+        <dfn id="dfn-array"><code>Array</code></dfn> corresponds to the in-memory representation for a
+        <a class="internalDFN" href="#dfn-jsonarray"><code>JSONArray</code></a>.
+      </p>
+      <p>
+        The following algorithm encodes form data as <code>application/json</code>. It operates
+        on the <var>form data set</var> obtained from <a class="internalDFN" href="#dfn-constructing-the-form-data-set">constructing the form data set</a>.
+      </p>
+      <ol>
+        <li>Let <var>resulting object</var> be a new <a class="internalDFN" href="#dfn-object"><code>Object</code></a>.</li>
+        <li>
+          For each entry in the <var>form data set</var>, perform these substeps:
+          <ol>
+            <li>If the entry's type is <code>file</code>, set the <var>is file</var> flag.</li>
+            <li>
+              Let <var>steps</var> be the result of running the <a class="internalDFN" href="#dfn-steps-to-parse-a-json-encoding-path">steps to parse a JSON encoding
+              path</a> on the entry's name.
+            </li>
+            <li>Let <var>context</var> be set to the value of <var>resulting object</var>.</li>
+            <li>
+              For each step in the list of <var>steps</var>, run the following subsubsteps:
+              <ol>
+                <li>
+                  Let the <var>current value</var> be the value obtained by getting the step's key
+                  from the current <var>context</var>.
+                </li>
+                <li>
+                  Run the <a class="internalDFN" href="#dfn-steps-to-set-a-json-encoding-value">steps to set a JSON encoding value</a> with the current 
+                  <var>context</var>, the step, the <var>current value</var>, the entry's value, and
+                  the <var>is file</var> flag.
+                </li>
+                <li>
+                  Update <var>context</var> to be the value returned by the <a class="internalDFN" href="#dfn-steps-to-set-a-json-encoding-value">steps to set a JSON
+                  encoding value</a> ran above.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Let <var>result</var> be the value returned from calling the <a class="internalDFN" href="#dfn-stringify">stringify</a> operation
+          with <var>resulting object</var> as its first parameter and the two remaining parameters
+          left undefined.
+        </li>
+        <li>
+          Encode <var>result</var> as UTF-8 and return the resulting byte stream.
+        </li>
+      </ol>
+      <div class="note"><div id="h_note_1" role="heading" aria-level="2" class="note-title"><span>Note</span></div><p class="">
+        The algorithm above deliberately ignores any charset information (e.g. from
+        <a class="internalDFN" href="#dfn-accept-charset"><code>accept-charset</code></a>) and always encodes the resulting JSON as UTF-8. This is
+        an intentionally sane behaviour.
+      </p></div>
+      
+      <p>
+        The <dfn id="dfn-steps-to-parse-a-json-encoding-path">steps to parse a JSON encoding path</dfn> are as follows:
+      </p>
+      <ol>
+        <li>Let <var>path</var> be the path we are to parse.</li>
+        <li>Let <var>original</var> be a copy of <path>var</path>.</li>
+        <li>Let <var>steps</var> be an empty list of steps.</li>
+        <li>
+          Let <var>first key</var> be the result of 
+          <a class="internalDFN" href="#dfn-collect-a-sequence-of-characters" title="collect a sequence of characters">collecting a sequence of characters</a> that 
+          are <em>not</em> U+005B LEFT SQUARE BRACKET ("[") from the path.
+        </li>
+        <li>
+          If <var>first key</var> is empty, jump to the step labelled <i>failure</i> below.
+        </li>
+        <li>
+          Otherwise remove the collected characters from <var>path</var> and push a step onto 
+          <var>steps</var> with its type set to "object", its key set to the collected characters,
+          and its last flag unset.
+        </li>
+        <li>
+          If the <var>path</var> is empty, set the last flag on the last step in <var>steps</var>
+          and return <var>steps</var>.
+        </li>
+        <li>
+          <i>Loop</i>:
+          While <var>path</var> is not an empty string, run these substeps:
+          <ol>
+            <li>
+              If the first two characters in <var>path</var> are U+005B LEFT SQUARE BRACKET ("[")
+              followed by U+005D RIGHT SQUARE BRACKET ("]"), run these subsubsteps:
+              <ol>
+                <li>Set the append flag on the last step in <var>steps</var>.</li>
+                <li>Remove those two characters from <var>path</var>.</li>
+                <li>
+                  If there are characters left in <var>path</var>, jump to the step labelled
+                  <i>failure</i> below.
+                </li>
+                <li>Otherwise jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If the first character in <var>path</var> is U+005B LEFT SQUARE BRACKET ("["),
+              followed by one or more <a class="internalDFN" href="#dfn-ascii-digits">ASCII digits</a>, followed by U+005D RIGHT SQUARE BRACKET
+              ("]"), run these subsubsteps:
+              <ol>
+                <li>Remove the first character from <var>path</var>.</li>
+                <li>
+                  <a class="internalDFN" href="#dfn-collect-a-sequence-of-characters">Collect a sequence of characters</a> being <a class="internalDFN" href="#dfn-ascii-digits">ASCII digits</a>, remove them 
+                  from <var>path</var>, and let <var>numeric key</var> be the result of interpreting
+                  them as a base-ten integer.
+                </li>
+                <li>Remove the following character from <var>path</var>.</li>
+                <li>
+                  Push a step onto <var>steps</var> with its type set to "array", its key set to the
+                  <var>numeric key</var>, and its last flag unset.
+                </li>
+                <li>Jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If the first character in <var>path</var> is U+005B LEFT SQUARE BRACKET ("["),
+              followed by one or more characters that are <em>not</em> U+005D RIGHT SQUARE BRACKET,
+              followed by U+005D RIGHT SQUARE BRACKET ("]"), run these subsubsteps:
+              <ol>
+                <li>Remove the first character from <var>path</var>.</li>
+                <li>
+                  <a class="internalDFN" href="#dfn-collect-a-sequence-of-characters">Collect a sequence of characters</a> that are <em>not</em> U+005D RIGHT SQUARE
+                  BRACKET, remove them from <var>path</var>, and let <var>object key</var> be the
+                  result.
+                </li>
+                <li>Remove the following character from <var>path</var>.</li>
+                <li>
+                  Push a step onto <var>steps</var> with its type set to "object", its key set to
+                  the <var>object key</var>, and its last flag unset.
+                </li>
+                <li>Jump to the step labelled <i>loop</i> above.</li>
+              </ol>
+            </li>
+            <li>
+              If this point in the loop is reached, jump to the step labelled <i>failure</i>
+              below.
+            </li>
+          </ol>
+        </li>
+        <li>
+          For each step in <var>steps</var>, run the following substeps:
+          <ol>
+            <li>If the step is the last step, set its last flag.</li>
+            <li>Otherwise, set its next type to the type of the next step in <var>steps</var>.</li>
+          </ol>
+        </li>
+        <li>Return <var>steps</var>.</li>
+        <li>
+          <i>Failure</i>: return a list of <var>steps</var> containing a single step with its type
+          set to "object", its key set to <var>original</var>, and its last flag set.
+        </li>
+      </ol>
+      
+      <p>
+        The <dfn id="dfn-steps-to-set-a-json-encoding-value">steps to set a JSON encoding value</dfn> are as follows:
+      </p>
+      <ol>
+        <li>Let <var>context</var> be the context this algorithm is called with.</li>
+        <li>Let <var>step</var> be the step of the path this algorithm is called with.</li>
+        <li>Let <var>current value</var> be the current value this algorithm is called with.</li>
+        <li>Let <var>entry value</var> be the entry value this algorithm is called with.</li>
+        <li>Let <var>is file</var> be the is file flag this algorithm is called with.</li>
+        <li>
+          If <var>is file</var> is set then replace <var>entry value</var> with an 
+          <a class="internalDFN" href="#dfn-object"><code>Object</code></a> have its "name" property set to the file's name, its
+          "type" property set to the file's type, and its "body" property set to the Base64 encoding
+          of the file's body. [<cite><a href="#bib-RFC2045" class="bibref">RFC2045</a></cite>] <!-- XXX maybe this should be RFC4648? -->
+        </li>
+        <li>
+          If <var>step</var> has its last flag set, run the following substeps:
+          <ol>
+            <li>
+              If <var>current value</var> is <code>undefined</code>, run the following subsubsteps:
+              <ol>
+                <li>
+                  If <var>step</var>'s append flag is set, set the <var>context</var>'s property
+                  named by the <var>step</var>'s key to a new <a class="internalDFN" href="#dfn-array"><code>Array</code></a> containing
+                  <var>entry value</var> as its only member.
+                </li>
+                <li>
+                  Otherwise, set the <var>context</var>'s property named by the <var>step</var>'s
+                  key to <var>entry value</var>.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a class="internalDFN" href="#dfn-array"><code>Array</code></a>, then get the
+              <var>context</var>'s property named by the <var>step</var>'s key and push 
+              <var>entry value</var> onto it.
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a class="internalDFN" href="#dfn-object"><code>Object</code></a> and the <var>is
+              file</var> flag is not set, then run the <a class="internalDFN" href="#dfn-steps-to-set-a-json-encoding-value">steps to set a JSON encoding value</a>
+              with context set to the <var>current value</var>; a step with its type set to
+              "object", its key set to the empty string, and its last flag set; current value set to
+              the <var>current value</var>'s property named by the empty string; the <var>entry
+              value</var>; and the <var>is file</var> flag. Return the result.
+            </li>
+            <li>
+              Otherwise, set the <var>context</var>'s property named by the <var>step</var>'s
+              key to an <a class="internalDFN" href="#dfn-array"><code>Array</code></a> containing <var>current value</var> and
+              <var>entry value</var>, in this order.
+            </li>
+            <li>
+              Return <var>context</var>.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Otherwise, run the following substeps:
+          <ol>
+            <li>
+              If <var>current value</var> is <code>undefined</code>, run the following subsubsteps:
+              <ol>
+                <li>
+                  If <var>step</var>'s next type is "array", set the <var>context</var>'s property
+                  named by the <var>step</var>'s key to a new empty <a class="internalDFN" href="#dfn-array"><code>Array</code></a> and
+                  return it.
+                </li>
+                <li>
+                  Otherwise,set the <var>context</var>'s property named by the <var>step</var>'s key
+                  to a new empty <a class="internalDFN" href="#dfn-object"><code>Object</code></a> and return it.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a class="internalDFN" href="#dfn-object"><code>Object</code></a>, then return
+              the value of the <var>context</var>'s property named by the <var>step</var>'s key.
+            </li>
+            <li>
+              Else if <var>current value</var> is an <a class="internalDFN" href="#dfn-array"><code>Array</code></a>, then rub the 
+              following subsubsteps:
+              <ol>
+                <li>If <var>step</var>'s next type is "array", return <var>current value</var>.</li>
+                <li>
+                  Otherwise, run the following subsubsubsteps:
+                  <ol>
+                    <li>Let <var>object</var> be a new empty <a class="internalDFN" href="#dfn-object"><code>Object</code></a>.</li>
+                    <li>
+                      For each <var>item</var> and zero-based index <var>i</var> in <var>current
+                      value</var>, if <var>item</var> is not <code>undefined</code> then set a
+                      property of <var>object</var> named <var>i</var> to <var>item</var>.
+                    </li>
+                    <li>
+                      Otherwise, set the <var>context</var>'s property named by the
+                      <var>step</var>'s key to <var>object</var>.
+                    </li>
+                    <li>Return <var>object</var>.</li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+              Otherwise, run the following subsubsteps:
+              <ol>
+                <li>
+                  Let <var>object</var> be a new <a class="internalDFN" href="#dfn-object"><code>Object</code></a> with a property named by
+                  the empty string set to <var>current value</var>.
+                </li>
+                <li>
+                  Set the <var>context</var>'s property named by the <var>step</var>'s
+                  key to <var>object</var>.
+                </li>
+                <li>Return <var>object</var>.</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </section>
+    <section id="form-submission">
+      <!--OddPage--><h2 id="h2_form-submission" role="heading" aria-level="1"><span class="secno">5. </span>Form Submission</h2>
+      <p>
+        Given that there exist deployed services using JSON and ambient authentication, and given
+        that form requests are not protected by the same-origin policy by default, if this 
+        encoding were left wide open then a number of attacks would become possible. Because of 
+        this, when using the <code>application/json</code> form encoding the same-origin policy is
+        enforced.
+      </p>
+      <p>
+        When the
+        <a href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#form-submission-algorithm">form
+        submission algorithm</a> is invoked in order to
+        <a href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#submit-body">Submit
+        as entity</a> with <var>enctype</var> set to <code>application/json</code> and <var>entity
+        body</var> set to the result of applying the <a class="internalDFN" href="#dfn-application-json-encoding-algorithm"><code>application/json</code> encoding
+        algorithm</a>, causing the browsing context to
+        <a href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#navigate">navigate</a>,
+        the user agent <em title="MUST" class="rfc2119">MUST</em> invoke the
+        <a href="http://www.w3.org/html/wg/drafts/html/master/single-page.html#fetch">fetch</a>
+        algorithm with the <i>force same-origin flag</i>.
+      </p>
+    </section>
+    <section id="acknowledgements">
+      <!--OddPage--><h2 id="h2_acknowledgements" role="heading" aria-level="1"><span class="secno">6. </span>Acknowledgements</h2>
+      <p>
+        Thanks to Philippe Le Hégaret for serving as a sounding board for the first version of the
+        encoding algorithm.
+      </p>
+      <!-- XXX add people from ML and GH issues -->
+    </section>
+  
+
+<section rel="bibo:Chapter" resource="#references" typeof="bibo:Chapter" id="references" class="appendix"><!--OddPage--><h2 id="h2_references" role="heading" aria-level="1"><span class="secno">A. </span>References</h2><section rel="bibo:Chapter" resource="#normative-references" typeof="bibo:Chapter" id="normative-references"><h3 id="h3_normative-references" role="heading" aria-level="2"><span class="secno">A.1 </span>Normative references</h3><dl about="" class="bibliography"><dt id="bib-ECMA-262">[ECMA-262]</dt><dd rel="dcterms:requires"><a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm"><cite>ECMAScript Language Specification, Edition 5.1</cite></a>. June 2011. URL: <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">http://www.ecma-international.org/publications/standards/Ecma-262.htm</a>
+</dd><dt id="bib-RFC2045">[RFC2045]</dt><dd rel="dcterms:requires">N. Freed and N. Borenstein. <a href="http://www.ietf.org/rfc/rfc2045.txt"><cite>Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies.</cite></a> November 1996. URL: <a href="http://www.ietf.org/rfc/rfc2045.txt">http://www.ietf.org/rfc/rfc2045.txt</a> 
+</dd><dt id="bib-RFC2119">[RFC2119]</dt><dd rel="dcterms:requires">S. Bradner. <a href="http://www.ietf.org/rfc/rfc2119.txt"><cite>Key words for use in RFCs to Indicate Requirement Levels.</cite></a> March 1997. Internet RFC 2119.  URL: <a href="http://www.ietf.org/rfc/rfc2119.txt">http://www.ietf.org/rfc/rfc2119.txt</a> 
+</dd><dt id="bib-html51">[html51]</dt><dd rel="dcterms:requires">Robin Berjon; Steve Faulkner; Travis Leithead; Erika Doyle Navara; Edward O'Connor; Silvia Pfeiffer. <a href="http://www.w3.org/TR/html51/"><cite>HTML 5.1</cite></a>. 4 February 2014. W3C Working Draft. URL: <a href="http://www.w3.org/TR/html51/">http://www.w3.org/TR/html51/</a>
+</dd></dl></section></section></body></html>
